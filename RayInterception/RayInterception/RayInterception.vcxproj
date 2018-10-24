@@ -118,10 +118,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="JSONLoader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="JSONLoader.h" />
     <ClInclude Include="ObjectData.h" />
     <ClInclude Include="ObjectLoader.h" />
   </ItemGroup>
