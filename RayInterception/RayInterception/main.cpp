@@ -4,6 +4,7 @@
 #include "ObjectLoader.h"
 #include "JSONLoader.h"
 #include <string> // remove later
+
 int main()
 {
 	// Load Object
@@ -20,7 +21,10 @@ int main()
 	// Load JSON - to be done in JSON loader class
 
 	JSONLoader jsl;
-	jsl.ReadFromJSONFile("camera.json");
+	jsl.ReadJSONandFillMap("camera.json");
+	jsl.PrintMap();
+
+
 
 
 
