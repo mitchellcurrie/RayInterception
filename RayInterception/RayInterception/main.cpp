@@ -2,8 +2,6 @@
 
 // Sort out multimap duplicates - instead of making new pair, check for existing key and add to it?
 
-
-
 #include <iostream>
 #include <time.h>
 #include "ObjectData.h"
@@ -28,10 +26,12 @@ int main()
 
 
 	Camera c;
-	if (!c.Initialise(const_cast<char*>("camera.json")))
+	if (!c.InitialiseValuesFromJSON(const_cast<char*>("camera.json")))
 	{
 		std::cout << "Couldn't initialse camera";
 	}
+
+	c.CalculateGLMvalues();
 
 
 

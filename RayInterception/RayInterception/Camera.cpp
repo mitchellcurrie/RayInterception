@@ -1,4 +1,5 @@
 #include "Camera.h"
+//#include "glm/gtc/matrix_transform.hpp"
 #include <iostream> // remove
 
 Camera::Camera()
@@ -11,7 +12,7 @@ Camera::Camera()
 	m_ImageHeight = 0, m_ImageWidth = 0;
 }
 
-bool Camera::Initialise(char* JSONFilepath)
+bool Camera::InitialiseValuesFromJSON(char* JSONFilepath)
 {
 	if (!JSONLoader::ReadJSONandFillMap(JSONFilepath))
 	{
@@ -21,18 +22,13 @@ bool Camera::Initialise(char* JSONFilepath)
 	std::multimap<std::string, float> ::iterator it;
 
 	auto translationValues = JSONLoader::m_dataMap.equal_range("translation");
-	float valuesXYZ[3] = { 0,0,0 };
 	int count = 0;
 
 	for (auto i = translationValues.first; i != translationValues.second; ++i)
 	{
-		valuesXYZ[count] = i->second;
+		m_Position[count] = i->second;
 		count++;
 	}
-
-	m_X = valuesXYZ[0];
-	m_Y = valuesXYZ[1];
-	m_Z = valuesXYZ[2];
 
 	for (it = JSONLoader::m_dataMap.begin(); it != JSONLoader::m_dataMap.end(); it++)
 	{	
@@ -63,14 +59,69 @@ bool Camera::Initialise(char* JSONFilepath)
 
 	m_VertFov = m_ImageHeight / m_ImageWidth * m_HorFOV;
 	
-	PrintCameraContents();
+	//PrintCameraContents();
 
 	return true;
 }
 
+void Camera::CalculateGLMvalues()
+{
+	//// Pitch is rotation around x-axis
+	//glm::mat4x4 pitchMatrix {1,0,0,0,
+	//						 0,cos(m_Pitch),-sin(m_Pitch),0,
+	//						 0,sin(m_Pitch),cos(m_Pitch),0,
+	//						 0,0,0,1};
+
+	//// Yaw is rotation around y-axis
+	//glm::mat4x4 yawMatrix {cos(m_Yaw),0,sin(m_Yaw),0,
+	//					   0,1,0,0,
+	//					   -sin(m_Yaw),0,cos(m_Yaw),0,
+	//					   0,0,0,1};
+
+	//// Roll is rotation around z-axis
+	//glm::mat4x4 rollMatrix {cos(m_Roll),-sin(m_Roll),0,0,
+	//					   sin(m_Roll),cos(m_Roll),0,0,
+	//	                   0,0,1,0,
+	//	                   0,0,0,1};
+	
+	// Roll is rotation around z-axis
+	glm::mat4x4 a{ cos(m_Roll),-sin(m_Roll),0,0,
+		sin(m_Roll),cos(m_Roll),0,0,
+		0,0,1,0,
+		0,0,0,1 };
+	
+	//// Yaw is rotation around y-axis
+	glm::mat4x4 b{ cos(m_Yaw),0,sin(m_Yaw),0,
+			0,1,0,0,
+			-sin(m_Yaw),0,cos(m_Yaw),0,
+			0,0,0,1};
+
+	// Roll is rotation around z-axis
+	glm::mat4x4 c{ cos(m_Pitch),-sin(m_Pitch),0,0,
+		sin(m_Pitch),cos(m_Pitch),0,0,
+		0,0,1,0,
+		0,0,0,1 };
+
+
+	glm::mat4x4 cameraRotation = c * b*a;
+
+	//glm::rotate(2.0f, glm::vec3(1, 0, 0));
+	
+	//glm::mat4x4 cameraRotation = rollMatrix * yawMatrix * pitchMatrix;
+	//glm::mat4x4 cameraRotation = pitchMatrix * yawMatrix * rollMatrix;
+
+	glm::mat4x4 other { cos(m_Roll)*cos(m_Yaw)*cos(m_Pitch) - sin(m_Roll)*sin(m_Pitch), -cos(m_Pitch)*sin(m_Roll) - cos(m_Roll)*cos(m_Yaw)*sin(m_Pitch), cos(m_Roll)*sin(m_Yaw), 0,
+		cos(m_Yaw)*cos(m_Pitch)*sin(m_Roll) + cos(m_Roll)*sin(m_Pitch), cos(m_Roll)*cos(m_Pitch) - cos(m_Yaw)*sin(m_Roll)*sin(m_Pitch), sin(m_Roll)*sin(m_Yaw), 0,
+		-cos(m_Pitch)*sin(m_Yaw), sin(m_Yaw)*sin(m_Pitch), cos(m_Yaw),0,
+		0,0,0,1};
+
+	PrintMat4x4(cameraRotation);
+	PrintMat4x4(other);
+}
+
 void Camera::PrintCameraContents()
 {
-	std::cout << "Translation: " << m_X << "," << m_Y << "," << m_Z << std::endl;
+	std::cout << "Translation / Position: " << m_Position[0] << "," << m_Position[1] << "," << m_Position[2] << std::endl;
 	std::cout << "Roll: " << m_Roll << std::endl;
 	std::cout << "Pitch: " << m_Pitch << std::endl;
 	std::cout << "Yaw: " << m_Yaw << std::endl;
@@ -80,4 +131,19 @@ void Camera::PrintCameraContents()
 	std::cout << "Vertical FOV: " << m_VertFov << std::endl;
 	std::cout << "Image Height: " << m_ImageHeight << std::endl;
 	std::cout << "Image Width: " << m_ImageWidth << std::endl;
+}
+
+void Camera::PrintMat4x4(glm::mat4x4 m)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			std::cout << m[i][j] << ", ";
+		}
+
+		std::cout << std::endl;
+	}
+
+	std::cout << std::endl;
 }

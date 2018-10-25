@@ -1,14 +1,19 @@
 #pragma once
+#include <glm\glm.hpp>
 #include "JSONLoader.h"
 
 class Camera 
 {
 public:
 	Camera();
-	bool Initialise(char* JSONFilepath);
+	bool InitialiseValuesFromJSON(char* JSONFilepath);
+	void CalculateGLMvalues();
 	void PrintCameraContents(); //remove later
+	void PrintMat4x4(glm::mat4x4 m); // remove later
 
 private:
+	glm::vec3 m_Position;
+	glm::vec3 m_Direction;
 
 	float m_X, m_Y, m_Z;
 	float m_Roll, m_Pitch, m_Yaw;
