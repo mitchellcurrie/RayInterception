@@ -4,7 +4,7 @@
 
 Camera::Camera()
 {
-	m_X = 0, m_Y = 0, m_Z = 0;
+	m_Position = glm::vec4(0), m_Direction = glm::vec4(0);
 	m_Roll = 0, m_Pitch = 0, m_Yaw = 0;
 	m_FocalLength = 0;
 	m_RadialDistortion = 0;
@@ -64,8 +64,11 @@ bool Camera::InitialiseValuesFromJSON(char* JSONFilepath)
 	return true;
 }
 
-void Camera::CalculateGLMvalues()
+void Camera::SetCameraDirection()
 {
+    //https://www.allaboutcircuits.com/technical-articles/dont-get-lost-in-deep-space-understanding-quaternions/
+
+	//// ORIGINAL //
 	//// Pitch is rotation around x-axis
 	//glm::mat4x4 pitchMatrix {1,0,0,0,
 	//						 0,cos(m_Pitch),-sin(m_Pitch),0,
@@ -84,39 +87,67 @@ void Camera::CalculateGLMvalues()
 	//	                   0,0,1,0,
 	//	                   0,0,0,1};
 	
-	// Roll is rotation around z-axis
-	glm::mat4x4 a{ cos(m_Roll),-sin(m_Roll),0,0,
-		sin(m_Roll),cos(m_Roll),0,0,
-		0,0,1,0,
-		0,0,0,1 };
-	
-	//// Yaw is rotation around y-axis
-	glm::mat4x4 b{ cos(m_Yaw),0,sin(m_Yaw),0,
-			0,1,0,0,
-			-sin(m_Yaw),0,cos(m_Yaw),0,
-			0,0,0,1};
 
-	// Roll is rotation around z-axis
-	glm::mat4x4 c{ cos(m_Pitch),-sin(m_Pitch),0,0,
-		sin(m_Pitch),cos(m_Pitch),0,0,
-		0,0,1,0,
-		0,0,0,1 };
+	//// ZYZ //
+	//// Rotate around z-axis by pitch
+	//glm::mat4x4 a{ cos(m_Pitch),-sin(m_Pitch),0,0,
+	//	sin(m_Pitch),cos(m_Pitch),0,0,
+	//	0,0,1,0,
+	//	0,0,0,1 };
+	//
+	//// Rotate around y-axis by yaw
+	//glm::mat4x4 b{ cos(m_Yaw),0,sin(m_Yaw),0,
+	//		0,1,0,0,
+	//		-sin(m_Yaw),0,cos(m_Yaw),0,
+	//		0,0,0,1};
+
+	//// Rotate around z-axis by roll
+	//glm::mat4x4 c{ cos(m_Roll),-sin(m_Roll),0,0,
+	//	sin(m_Roll),cos(m_Roll),0,0,
+	//	0,0,1,0,
+	//	0,0,0,1 };
 
 
-	glm::mat4x4 cameraRotation = c * b*a;
+	//// Euler ZXZ Rotation Format //
+	// Rotate around z-axis by pitch
+	glm::mat4x4 zPitch {cos(m_Pitch),-sin(m_Pitch),0,0,
+						sin(m_Pitch),cos(m_Pitch),0,0,
+						0,0,1,0,
+						0,0,0,1 };
 
-	//glm::rotate(2.0f, glm::vec3(1, 0, 0));
+	// Rotate around x-axis by yaw
+	glm::mat4x4 xYaw {1,0,0,0,
+					  0,cos(m_Yaw),-sin(m_Yaw),0,
+					  0,sin(m_Yaw),cos(m_Yaw),0,
+					  0,0,0,1 };
+
+	// Rotate around z-axis by roll
+	glm::mat4x4 zRoll {cos(m_Roll),-sin(m_Roll),0,0,
+				       sin(m_Roll),cos(m_Roll),0,0,
+					   0,0,1,0,
+					   0,0,0,1 };
+
+	glm::mat4x4 cameraRotation = zPitch * xYaw * zRoll;
+	m_Direction = m_Position * cameraRotation;
+
+	PrintVec4(m_Direction);
+	PrintVec4(m_Position);
+
+	std::cout << std::endl;
+
+
+
+
 	
 	//glm::mat4x4 cameraRotation = rollMatrix * yawMatrix * pitchMatrix;
 	//glm::mat4x4 cameraRotation = pitchMatrix * yawMatrix * rollMatrix;
 
-	glm::mat4x4 other { cos(m_Roll)*cos(m_Yaw)*cos(m_Pitch) - sin(m_Roll)*sin(m_Pitch), -cos(m_Pitch)*sin(m_Roll) - cos(m_Roll)*cos(m_Yaw)*sin(m_Pitch), cos(m_Roll)*sin(m_Yaw), 0,
+	/*glm::mat4x4 ZYZ { cos(m_Roll)*cos(m_Yaw)*cos(m_Pitch) - sin(m_Roll)*sin(m_Pitch), -cos(m_Pitch)*sin(m_Roll) - cos(m_Roll)*cos(m_Yaw)*sin(m_Pitch), cos(m_Roll)*sin(m_Yaw), 0,
 		cos(m_Yaw)*cos(m_Pitch)*sin(m_Roll) + cos(m_Roll)*sin(m_Pitch), cos(m_Roll)*cos(m_Pitch) - cos(m_Yaw)*sin(m_Roll)*sin(m_Pitch), sin(m_Roll)*sin(m_Yaw), 0,
 		-cos(m_Pitch)*sin(m_Yaw), sin(m_Yaw)*sin(m_Pitch), cos(m_Yaw),0,
-		0,0,0,1};
+		0,0,0,1};*/
 
 	PrintMat4x4(cameraRotation);
-	PrintMat4x4(other);
 }
 
 void Camera::PrintCameraContents()
@@ -146,4 +177,9 @@ void Camera::PrintMat4x4(glm::mat4x4 m)
 	}
 
 	std::cout << std::endl;
+}
+
+void Camera::PrintVec4(glm::vec4 v)
+{
+	std::cout << v[0] << "," << v[1] << "," << v[2] << "," << v[3] << std::endl;
 }

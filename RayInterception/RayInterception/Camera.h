@@ -7,15 +7,15 @@ class Camera
 public:
 	Camera();
 	bool InitialiseValuesFromJSON(char* JSONFilepath);
-	void CalculateGLMvalues();
+	void SetCameraDirection();
 	void PrintCameraContents(); //remove later
 	void PrintMat4x4(glm::mat4x4 m); // remove later
+	void PrintVec4(glm::vec4 v); // remove later
 
 private:
-	glm::vec3 m_Position;
-	glm::vec3 m_Direction;
+	glm::vec4 m_Position;
+	glm::vec4 m_Direction;
 
-	float m_X, m_Y, m_Z;
 	float m_Roll, m_Pitch, m_Yaw;
 	float m_FocalLength;
 	float m_RadialDistortion;

@@ -31,7 +31,7 @@ int main()
 		std::cout << "Couldn't initialse camera";
 	}
 
-	c.CalculateGLMvalues();
+	c.SetCameraDirection();
 
 
 
