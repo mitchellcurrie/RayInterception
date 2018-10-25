@@ -5,6 +5,7 @@
 #include <sstream>
 #include "JSONLoader.h"
 
+std::multimap<std::string, float> JSONLoader::m_dataMap;
 
 JSONLoader::JSONLoader()
 {
@@ -20,7 +21,7 @@ void JSONLoader::PrintMap() // remove
 	}
 }
 
-void JSONLoader::ReadJSONandFillMap(std::string filepath)
+bool JSONLoader::ReadJSONandFillMap(char* filepath)
 {
 	std::string currentLine = "";
 	std::string currentKey = "";
@@ -53,7 +54,11 @@ void JSONLoader::ReadJSONandFillMap(std::string filepath)
 	else
 	{
 		std::cout << "Could not open file in ReadJSONandFillMap function" << std::endl;
+		return false;
 	}
+
+	JSONFile.close();
+	return true;
 }
 
 

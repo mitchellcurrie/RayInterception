@@ -6,12 +6,8 @@ class JSONLoader
 {
 public:
 	JSONLoader();
-	void PrintMap(); // delete later and from cpp file
-	void ReadJSONandFillMap(std::string filepath);
-
-private:
-	std::multimap<std::string, float> m_dataMap;
-
-
+	static void PrintMap(); // delete later and from cpp file
+	static bool ReadJSONandFillMap(char* filepath);
+	static std::multimap<std::string, float> m_dataMap;
 };
 

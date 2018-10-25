@@ -1,10 +1,12 @@
 #pragma once
+#include "JSONLoader.h"
 
 class Camera 
 {
 public:
 	Camera();
-	void Initialise();
+	bool Initialise(char* JSONFilepath);
+	void PrintCameraContents(); //remove later
 
 private:
 
