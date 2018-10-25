@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Utils.h"
 //#include "glm/gtc/matrix_transform.hpp"
 #include <iostream> // remove
 
@@ -130,8 +131,8 @@ void Camera::SetCameraDirection()
 	glm::mat4x4 cameraRotation = zPitch * xYaw * zRoll;
 	m_Direction = m_Position * cameraRotation;
 
-	PrintVec4(m_Direction);
-	PrintVec4(m_Position);
+	Utils::PrintVec4(m_Direction);
+	Utils::PrintVec4(m_Position);
 
 	std::cout << std::endl;
 
@@ -147,7 +148,7 @@ void Camera::SetCameraDirection()
 		-cos(m_Pitch)*sin(m_Yaw), sin(m_Yaw)*sin(m_Pitch), cos(m_Yaw),0,
 		0,0,0,1};*/
 
-	PrintMat4x4(cameraRotation);
+	Utils::PrintMat4x4(cameraRotation);
 }
 
 void Camera::PrintCameraContents()
@@ -162,24 +163,4 @@ void Camera::PrintCameraContents()
 	std::cout << "Vertical FOV: " << m_VertFov << std::endl;
 	std::cout << "Image Height: " << m_ImageHeight << std::endl;
 	std::cout << "Image Width: " << m_ImageWidth << std::endl;
-}
-
-void Camera::PrintMat4x4(glm::mat4x4 m)
-{
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			std::cout << m[i][j] << ", ";
-		}
-
-		std::cout << std::endl;
-	}
-
-	std::cout << std::endl;
-}
-
-void Camera::PrintVec4(glm::vec4 v)
-{
-	std::cout << v[0] << "," << v[1] << "," << v[2] << "," << v[3] << std::endl;
 }

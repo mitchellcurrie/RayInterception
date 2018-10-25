@@ -122,12 +122,14 @@
     <ClCompile Include="JSONLoader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectLoader.cpp" />
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="JSONLoader.h" />
     <ClInclude Include="ObjectData.h" />
     <ClInclude Include="ObjectLoader.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="camera.json" />

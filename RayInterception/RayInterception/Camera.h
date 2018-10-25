@@ -9,8 +9,6 @@ public:
 	bool InitialiseValuesFromJSON(char* JSONFilepath);
 	void SetCameraDirection();
 	void PrintCameraContents(); //remove later
-	void PrintMat4x4(glm::mat4x4 m); // remove later
-	void PrintVec4(glm::vec4 v); // remove later
 
 private:
 	glm::vec4 m_Position;
