@@ -1,11 +1,12 @@
 #include "Camera.h"
 #include "Utils.h"
-//#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 #include <iostream> // remove
 
 Camera::Camera()
 {
-	m_Position = glm::vec4(0), m_Direction = glm::vec4(0);
+	m_Position = glm::vec4(0);
+	m_Position[3] = 1.0f;
 	m_Roll = 0, m_Pitch = 0, m_Yaw = 0;
 	m_FocalLength = 0;
 	m_RadialDistortion = 0;
@@ -58,17 +59,13 @@ bool Camera::InitialiseValuesFromJSON(char* JSONFilepath)
 			m_ImageHeight = it->second;
 	}
 
-	m_VertFov = m_ImageHeight / m_ImageWidth * m_HorFOV;
-	
 	//PrintCameraContents();
 
 	return true;
 }
 
-void Camera::SetCameraDirection()
+void Camera::SetRotation()
 {
-    //https://www.allaboutcircuits.com/technical-articles/dont-get-lost-in-deep-space-understanding-quaternions/
-
 	//// ORIGINAL //
 	//// Pitch is rotation around x-axis
 	//glm::mat4x4 pitchMatrix {1,0,0,0,
@@ -111,31 +108,26 @@ void Camera::SetCameraDirection()
 
 	//// Euler ZXZ Rotation Format //
 	// Rotate around z-axis by pitch
-	glm::mat4x4 zPitch {cos(m_Pitch),-sin(m_Pitch),0,0,
+	glm::mat4 zPitch {cos(m_Pitch),-sin(m_Pitch),0,0,
 						sin(m_Pitch),cos(m_Pitch),0,0,
 						0,0,1,0,
 						0,0,0,1 };
 
 	// Rotate around x-axis by yaw
-	glm::mat4x4 xYaw {1,0,0,0,
+	glm::mat4 xYaw {1,0,0,0,
 					  0,cos(m_Yaw),-sin(m_Yaw),0,
 					  0,sin(m_Yaw),cos(m_Yaw),0,
 					  0,0,0,1 };
 
 	// Rotate around z-axis by roll
-	glm::mat4x4 zRoll {cos(m_Roll),-sin(m_Roll),0,0,
+	glm::mat4 zRoll {cos(m_Roll),-sin(m_Roll),0,0,
 				       sin(m_Roll),cos(m_Roll),0,0,
 					   0,0,1,0,
 					   0,0,0,1 };
 
-	glm::mat4x4 cameraRotation = zPitch * xYaw * zRoll;
-	m_Direction = m_Position * cameraRotation;
+	m_Rotation = zPitch * xYaw * zRoll;
 
-	Utils::PrintVec4(m_Direction);
-	Utils::PrintVec4(m_Position);
-
-	std::cout << std::endl;
-
+	
 
 
 
@@ -147,8 +139,48 @@ void Camera::SetCameraDirection()
 		cos(m_Yaw)*cos(m_Pitch)*sin(m_Roll) + cos(m_Roll)*sin(m_Pitch), cos(m_Roll)*cos(m_Pitch) - cos(m_Yaw)*sin(m_Roll)*sin(m_Pitch), sin(m_Roll)*sin(m_Yaw), 0,
 		-cos(m_Pitch)*sin(m_Yaw), sin(m_Yaw)*sin(m_Pitch), cos(m_Yaw),0,
 		0,0,0,1};*/
+}
 
-	Utils::PrintMat4x4(cameraRotation);
+void Camera::SetTranslation()
+{
+	m_Translation = glm::mat4(1, 0, 0, m_Position[0],
+							  0, 1, 0, m_Position[1],
+							  0, 0, 1, m_Position[2],
+							  0, 0, 0, m_Position[3]);
+}
+
+void Camera::SetMatrices()
+{
+	SetRotation();
+	SetTranslation();
+
+	// Set camera matrix to identity
+	m_Camera = glm::mat4(1.0);
+
+	// Rotate by rotation matrix
+	m_Camera *= m_Rotation;
+
+	// Translate by translation matrix
+	m_Camera *= m_Translation;
+
+	// Set model matrix to identity since it is assumed the models local space is world space
+	m_Model = glm::mat4(1.0);
+
+	// View Matrix is the inverse of the camera matrix
+	m_View = glm::inverse(m_Camera);
+
+	// Utils::PrintMat4(m_Camera);
+
+	m_VertFov = 2 * atan(tan(m_HorFOV / 2)*(m_ImageHeight / m_ImageWidth));
+
+	m_Projection = glm::perspective(
+		m_VertFov, // vertical FOV
+		m_ImageWidth / m_ImageHeight,  // Aspect ratio
+		0.1f,  // near clipping plane
+		100.0f  // far clipping plane
+	);
+
+	m_MVP = m_Projection * m_View * m_Model;
 }
 
 void Camera::PrintCameraContents()

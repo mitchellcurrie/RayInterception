@@ -1,7 +1,7 @@
 #include <iostream>
 #include "Utils.h"
 
-void Utils::PrintMat4x4(glm::mat4x4 m)
+void Utils::PrintMat4(glm::mat4 m)
 {
 	for (int i = 0; i < 4; i++)
 	{

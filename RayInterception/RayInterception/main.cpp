@@ -1,6 +1,13 @@
 // To DO
 
-// Sort out multimap duplicates - instead of making new pair, check for existing key and add to it?
+// Links
+// https://webglfundamentals.org/webgl/lessons/webgl-3d-camera.html
+// https://www.3dgep.com/understanding-the-view-matrix/
+// http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/#the-model-view-and-projection-matrices
+// https://wiki.panotools.org/Field_of_View
+// https://www.opengl.org/discussion_boards/showthread.php/156169-How-to-set-focal-length-in-OpenGL-_
+
+
 
 #include <iostream>
 #include <time.h>
@@ -31,7 +38,7 @@ int main()
 		std::cout << "Couldn't initialse camera";
 	}
 
-	c.SetCameraDirection();
+	c.SetMatrices();
 
 
 

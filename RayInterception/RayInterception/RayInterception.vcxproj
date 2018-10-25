@@ -122,6 +122,7 @@
     <ClCompile Include="JSONLoader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectLoader.cpp" />
+    <ClCompile Include="RayInterception.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +130,7 @@
     <ClInclude Include="JSONLoader.h" />
     <ClInclude Include="ObjectData.h" />
     <ClInclude Include="ObjectLoader.h" />
+    <ClInclude Include="RayInterception.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
