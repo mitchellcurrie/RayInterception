@@ -19,11 +19,17 @@
 #include "ObjectData.h"
 #include "ObjectLoader.h"
 #include "Camera.h"
+#include "RayInterception.h"
 #include <string> // remove later
+
+void PrintVertexCacheElements(ObjectDataPtr _objPtr, int _numOfElements); // remove
 
 int main()
 {
-	// Load Object
+	/////////////////
+	// Load object //
+	/////////////////
+
 	ObjectDataPtr objPtr(nullptr);
 
 	// cin to get input for object filepath, then check for if objPtr is null / or do a cout in the loader saying loading... etc
@@ -34,6 +40,9 @@ int main()
 	objPtr = ObjectLoader::Load("green.obj");
 	printf("Time taken to load object: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
 
+	///////////////////
+	// Set up Camera //
+	///////////////////
 
 	Camera camera;
 	if (!camera.InitialiseValuesFromJSON(const_cast<char*>("camera.json")))
@@ -43,47 +52,28 @@ int main()
 
 	camera.SetMatrices();
 
-	//std::cout << std::endl << "Size of indices vector: " << objPtr->indices.size() << std::endl;
+	////////////////////////////////////////////
+	// Update object vertices based on camera //
+	///////////////////////////////////////////
 
-	//std::cout << "Size of vertex cache map: " << objPtr->vertexCache.size() << std::endl;
+	PrintVertexCacheElements(objPtr, 10);
+	RayInterception::UpdateObjectVertices(camera, objPtr);
+	PrintVertexCacheElements(objPtr, 10);
 
+	int w;
+	std::cin >> w;
+
+	return 0;
+}
+
+
+
+void PrintVertexCacheElements(ObjectDataPtr _objPtr, int _numOfElements) // to remove
+{
 	std::unordered_map<std::string, VertexCache>::iterator it;
+	it = _objPtr->vertexCache.begin();
 
-	it = objPtr->vertexCache.begin();
-	
-	for (int i = 0; i < 10; i++)
-	{
-		std::cout << "Index: " << it->second.index << "    Pos: "
-				  << it->second.vertex.pos[0] << "," << it->second.vertex.pos[1] << "," << it->second.vertex.pos[2] << "   Nrm: "
-			      << it->second.vertex.nrm[0] << "," << it->second.vertex.nrm[1] << "," << it->second.vertex.nrm[2] << std::endl;
-		it++;
-	}
-
-	std::cout << std::endl;
-
-	tStart = clock();
-	std::cout << "Looping..." << std::endl;
-
-	for (it = objPtr->vertexCache.begin(); it != objPtr->vertexCache.end(); it++)
-	{
-		glm::vec4 temp{ it->second.vertex.pos[0], it->second.vertex.pos[1], it->second.vertex.pos[2], 1 };
-		temp = camera.m_MVP * temp;
-		it->second.vertex.pos[0] = temp[0];
-		it->second.vertex.pos[1] = temp[1];
-		it->second.vertex.pos[2] = temp[2];
-
-		temp = { it->second.vertex.nrm[0], it->second.vertex.nrm[1], it->second.vertex.nrm[2], 1 };
-		temp = camera.m_Normal * temp;
-		it->second.vertex.nrm[0] = temp[0];
-		it->second.vertex.nrm[1] = temp[1];
-		it->second.vertex.nrm[2] = temp[2];
-	}
-
-	printf("Time taken to loop: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
-
-	it = objPtr->vertexCache.begin();
-
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < _numOfElements; i++)
 	{
 		std::cout << "Index: " << it->second.index << "    Pos: "
 			<< it->second.vertex.pos[0] << "," << it->second.vertex.pos[1] << "," << it->second.vertex.pos[2] << "   Nrm: "
@@ -91,10 +81,5 @@ int main()
 		it++;
 	}
 
-	int w;
-	std::cin >> w;
-
-
-	
-	return 0;
+	std::cout << std::endl;
 }
