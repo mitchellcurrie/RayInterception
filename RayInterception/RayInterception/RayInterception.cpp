@@ -26,4 +26,9 @@ void RayInterception::UpdateObjectVertices(Camera _camera, ObjectDataPtr _objPtr
 	}
 }
 
+void RayInterception::ScreenToWorld(glm::vec2 & v)
+{
+
+}
+
 
