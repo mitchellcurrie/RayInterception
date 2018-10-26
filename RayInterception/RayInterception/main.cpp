@@ -34,10 +34,10 @@ int main()
 	// cin to get input for object filepath, then check for if objPtr is null / or do a cout in the loader saying loading... etc
 	// if null, do a while loop to enter filepath again
 
-	clock_t tStart = clock();
-	std::cout << "Loading..." << std::endl;  //change to if actually loading etc
+	//clock_t tStart = clock();
+	//std::cout << "Loading..." << std::endl;  //change to if actually loading etc
 	//objPtr = ObjectLoader::Load("green.obj");
-	printf("Time taken to load object: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
+	//printf("Time taken to load object: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
 
 	///////////////////
 	// Set up Camera //
@@ -63,6 +63,14 @@ int main()
 		RayInterception::UpdateObjectVertices(camera, objPtr);
 		PrintVertexCacheElements(objPtr, 10);
 	}
+
+	glm::vec2 XY{ 100,23 };
+
+	std::cout << XY[0] << "," << XY[1] << std::endl;
+
+	RayInterception::ScreenToWorld(XY, camera);
+
+	std::cout << XY[0] << "," << XY[1] << std::endl;
 
 	int w;
 	std::cin >> w;

@@ -15,6 +15,8 @@ public:
 	glm::mat4 m_MVP; // move to public for testing
 	glm::mat4 m_Normal; // testing
 
+	float m_ImageHeight, m_ImageWidth; // keep public?
+
 private:
 	glm::vec4 m_Position;
 
@@ -34,7 +36,6 @@ private:
 	float m_FocalLength;
 	float m_RadialDistortion;
 	float m_HorFOV, m_VertFov;
-	float m_ImageHeight, m_ImageWidth;
 };
 
 

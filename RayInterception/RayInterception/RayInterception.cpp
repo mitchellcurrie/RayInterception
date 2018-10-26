@@ -12,23 +12,38 @@ void RayInterception::UpdateObjectVertices(Camera _camera, ObjectDataPtr _objPtr
 
 	for (it = _objPtr->vertexCache.begin(); it != _objPtr->vertexCache.end(); it++)
 	{
-		glm::vec4 temp{ it->second.vertex.pos[0], it->second.vertex.pos[1], it->second.vertex.pos[2], 1 };
+		// Convert position vec3 to vec4, adding 1 at the end
+		glm::vec4 temp{ it->second.vertex.pos, 1 };
+		// Multiply position by MVP matrix
 		temp = _camera.m_MVP * temp;
-		it->second.vertex.pos[0] = temp[0];
-		it->second.vertex.pos[1] = temp[1];
-		it->second.vertex.pos[2] = temp[2];
+		// Assign the new position back to the vertex cache
+		it->second.vertex.pos = temp;
 
-		temp = { it->second.vertex.nrm[0], it->second.vertex.nrm[1], it->second.vertex.nrm[2], 1 };
+		// Same calculations for the normal, multiplying by the normal matrix
+		temp = { it->second.vertex.nrm, 1 };
 		temp = _camera.m_Normal * temp;
-		it->second.vertex.nrm[0] = temp[0];
-		it->second.vertex.nrm[1] = temp[1];
-		it->second.vertex.nrm[2] = temp[2];
+		it->second.vertex.nrm = temp;
 	}
 }
 
-void RayInterception::ScreenToWorld(glm::vec2 & v)
+void RayInterception::ScreenToWorld(glm::vec2 & v, Camera _camera)
 {
+	// X and Y are in pixels here
+	float x = v[0];
+	float y = v[1];
+	
+	// Translate x and y to move origin to centre of view port
+	x -= _camera.m_ImageWidth / 2;
+	y -= _camera.m_ImageHeight / 2;
 
+	// Scale x and y to the range of -1 to 1
+	x /= (_camera.m_ImageWidth / 2);
+	y /= (_camera.m_ImageHeight / 2);
+
+
+
+	v[0] = x;
+	v[1] = y;
 }
 
 
