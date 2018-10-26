@@ -179,8 +179,12 @@ void Camera::SetMatrices()
 		0.1f,						    // near clipping plane
 		100.0f					        // far clipping plane
 	);
+	
+	glm::mat4 modelView = m_View * m_Model;
 
-	m_MVP = m_Projection * m_View * m_Model;
+	m_Normal = glm::transpose(glm::inverse(modelView));
+
+	m_MVP = m_Projection * modelView;
 }
 
 void Camera::PrintCameraContents()
