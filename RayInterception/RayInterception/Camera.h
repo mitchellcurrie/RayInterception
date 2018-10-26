@@ -13,6 +13,7 @@ public:
 	void PrintCameraContents(); //remove later
 
 	glm::mat4 m_MVP; // move to public for testing
+	glm::mat4 m_Normal; // testing
 
 private:
 	glm::vec4 m_Position;
@@ -26,7 +27,7 @@ private:
 	glm::mat4 m_Projection;
 //	glm::mat4 m_MVP;
 
-	glm::mat4 m_Normal;
+//	glm::mat4 m_Normal;
 	
 
 	float m_Roll, m_Pitch, m_Yaw;

@@ -31,7 +31,7 @@ int main()
 
 	clock_t tStart = clock();
 	std::cout << "Loading..." << std::endl;  //change to if actually loading etc
-	//objPtr = ObjectLoader::Load("green.obj");
+	objPtr = ObjectLoader::Load("green.obj");
 	printf("Time taken to load object: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
 
 
@@ -43,9 +43,6 @@ int main()
 
 	camera.SetMatrices();
 
-	int s;
-	std::cin >> s;
-
 	//std::cout << std::endl << "Size of indices vector: " << objPtr->indices.size() << std::endl;
 
 	//std::cout << "Size of vertex cache map: " << objPtr->vertexCache.size() << std::endl;
@@ -56,8 +53,9 @@ int main()
 	
 	for (int i = 0; i < 10; i++)
 	{
-		std::cout << "Index: " << it->second.index << "    Vertex: "
-				  << it->second.vertex.pos[0] << "," << it->second.vertex.pos[1] << "," << it->second.vertex.pos[2] << std::endl;
+		std::cout << "Index: " << it->second.index << "    Pos: "
+				  << it->second.vertex.pos[0] << "," << it->second.vertex.pos[1] << "," << it->second.vertex.pos[2] << "   Nrm: "
+			      << it->second.vertex.nrm[0] << "," << it->second.vertex.nrm[1] << "," << it->second.vertex.nrm[2] << std::endl;
 		it++;
 	}
 
@@ -73,6 +71,12 @@ int main()
 		it->second.vertex.pos[0] = temp[0];
 		it->second.vertex.pos[1] = temp[1];
 		it->second.vertex.pos[2] = temp[2];
+
+		temp = { it->second.vertex.nrm[0], it->second.vertex.nrm[1], it->second.vertex.nrm[2], 1 };
+		temp = camera.m_Normal * temp;
+		it->second.vertex.nrm[0] = temp[0];
+		it->second.vertex.nrm[1] = temp[1];
+		it->second.vertex.nrm[2] = temp[2];
 	}
 
 	printf("Time taken to loop: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
@@ -81,8 +85,9 @@ int main()
 
 	for (int i = 0; i < 10; i++)
 	{
-		std::cout << "Index: " << it->second.index << "    Vertex: "
-			<< it->second.vertex.pos[0] << "," << it->second.vertex.pos[1] << "," << it->second.vertex.pos[2] << std::endl;
+		std::cout << "Index: " << it->second.index << "    Pos: "
+			<< it->second.vertex.pos[0] << "," << it->second.vertex.pos[1] << "," << it->second.vertex.pos[2] << "   Nrm: "
+			<< it->second.vertex.nrm[0] << "," << it->second.vertex.nrm[1] << "," << it->second.vertex.nrm[2] << std::endl;
 		it++;
 	}
 

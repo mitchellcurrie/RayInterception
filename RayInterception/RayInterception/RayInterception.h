@@ -4,8 +4,11 @@ class RayInterception
 {
 public:
 	RayInterception();
+	//void UpdateObjectVertices(Camera _camera, ObjectDataPtr _objPtr)
 
 private:
+	
+
 
 
 };
