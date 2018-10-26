@@ -20,7 +20,6 @@
 #include "ObjectLoader.h"
 #include "Camera.h"
 #include "RayInterception.h"
-#include <string> // remove later
 
 void PrintVertexCacheElements(ObjectDataPtr _objPtr, int _numOfElements); // remove
 
@@ -37,7 +36,7 @@ int main()
 
 	clock_t tStart = clock();
 	std::cout << "Loading..." << std::endl;  //change to if actually loading etc
-	objPtr = ObjectLoader::Load("green.obj");
+	//objPtr = ObjectLoader::Load("green.obj");
 	printf("Time taken to load object: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
 
 	///////////////////
@@ -49,16 +48,21 @@ int main()
 	{
 		std::cout << "Couldn't initialse camera";
 	}
-
-	camera.SetMatrices();
+	else
+	{
+		camera.SetMatrices();
+	}
 
 	////////////////////////////////////////////
 	// Update object vertices based on camera //
 	///////////////////////////////////////////
 
-	PrintVertexCacheElements(objPtr, 10);
-	RayInterception::UpdateObjectVertices(camera, objPtr);
-	PrintVertexCacheElements(objPtr, 10);
+	if (objPtr)
+	{
+		PrintVertexCacheElements(objPtr, 10);
+		RayInterception::UpdateObjectVertices(camera, objPtr);
+		PrintVertexCacheElements(objPtr, 10);
+	}
 
 	int w;
 	std::cin >> w;
