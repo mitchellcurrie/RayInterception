@@ -174,10 +174,10 @@ void Camera::SetMatrices()
 	m_VertFov = 2 * atan(tan(m_HorFOV / 2)*(m_ImageHeight / m_ImageWidth));
 
 	m_Projection = glm::perspective(
-		m_VertFov, // vertical FOV
-		m_ImageWidth / m_ImageHeight,  // Aspect ratio
-		0.1f,  // near clipping plane
-		100.0f  // far clipping plane
+		m_VertFov,						// vertical FOV
+		m_ImageWidth / m_ImageHeight,   // Aspect ratio
+		0.1f,						    // near clipping plane
+		100.0f					        // far clipping plane
 	);
 
 	m_MVP = m_Projection * m_View * m_Model;
