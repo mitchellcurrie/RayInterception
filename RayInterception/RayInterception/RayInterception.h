@@ -7,7 +7,7 @@ class RayInterception
 public:
 	RayInterception();
 	static void UpdateObjectVertices(Camera _camera, ObjectDataPtr _objPtr);
-	static void ScreenToWorld(glm::vec2 &v, Camera _camera);
+	static glm::vec3 CalculateRayFromScreenPoint(float x, float y, Camera _camera);
 
 private:
 	

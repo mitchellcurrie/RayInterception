@@ -6,7 +6,7 @@
 Camera::Camera()
 {
 	m_Position = glm::vec4(0);
-	m_Position[3] = 1.0f;
+	m_Position.w = 1.0f;
 	m_Roll = 0, m_Pitch = 0, m_Yaw = 0;
 	m_FocalLength = 0;
 	m_RadialDistortion = 0;
@@ -143,10 +143,10 @@ void Camera::SetRotation()
 
 void Camera::SetTranslation()
 {
-	m_Translation = glm::mat4(1, 0, 0, m_Position[0],
-							  0, 1, 0, m_Position[1],
-							  0, 0, 1, m_Position[2],
-							  0, 0, 0, m_Position[3]);
+	m_Translation = glm::mat4(1, 0, 0, m_Position.x,
+							  0, 1, 0, m_Position.y,
+							  0, 0, 1, m_Position.z,
+							  0, 0, 0, m_Position.w);
 }
 
 void Camera::SetMatrices()
@@ -189,7 +189,7 @@ void Camera::SetMatrices()
 
 void Camera::PrintCameraContents()
 {
-	std::cout << "Translation / Position: " << m_Position[0] << "," << m_Position[1] << "," << m_Position[2] << std::endl;
+	std::cout << "Translation / Position: " << m_Position.x << "," << m_Position.y << "," << m_Position.z << std::endl;
 	std::cout << "Roll: " << m_Roll << std::endl;
 	std::cout << "Pitch: " << m_Pitch << std::endl;
 	std::cout << "Yaw: " << m_Yaw << std::endl;

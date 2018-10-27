@@ -12,6 +12,12 @@
 // https://wiki.panotools.org/Field_of_View
 // https://www.opengl.org/discussion_boards/showthread.php/156169-How-to-set-focal-length-in-OpenGL-_
 
+// Mouse coordinates
+// https://gamedev.stackexchange.com/questions/9693/whats-a-good-way-to-check-that-a-player-has-clicked-on-an-object-in-a-3d-game
+// http://antongerdelan.net/opengl/raycasting.html
+// http://schabby.de/picking-opengl-ray-tracing/
+// https://stackoverflow.com/questions/40276068/opengl-raycasting-with-any-object
+
 
 
 #include <iostream>
@@ -64,13 +70,14 @@ int main()
 		PrintVertexCacheElements(objPtr, 10);
 	}
 
-	glm::vec2 XY{ 100,23 };
+	float x = 1530;
+	float y = 900;
 
-	std::cout << XY[0] << "," << XY[1] << std::endl;
+	std::cout << x << "," << y << std::endl;
 
-	RayInterception::ScreenToWorld(XY, camera);
+	glm::vec3 R1 = RayInterception::CalculateRayFromScreenPoint(x, y, camera);
 
-	std::cout << XY[0] << "," << XY[1] << std::endl;
+	std::cout << R1.x << "," << R1.y << "," << R1.z << std::endl;
 
 	int w;
 	std::cin >> w;
@@ -88,8 +95,8 @@ void PrintVertexCacheElements(ObjectDataPtr _objPtr, int _numOfElements) // to r
 	for (int i = 0; i < _numOfElements; i++)
 	{
 		std::cout << "Index: " << it->second.index << "    Pos: "
-			<< it->second.vertex.pos[0] << "," << it->second.vertex.pos[1] << "," << it->second.vertex.pos[2] << "   Nrm: "
-			<< it->second.vertex.nrm[0] << "," << it->second.vertex.nrm[1] << "," << it->second.vertex.nrm[2] << std::endl;
+			<< it->second.vertex.pos.x << "," << it->second.vertex.pos.y << "," << it->second.vertex.pos.z << "   Nrm: "
+			<< it->second.vertex.nrm.x << "," << it->second.vertex.nrm.y << "," << it->second.vertex.nrm.z << std::endl;
 		it++;
 	}
 

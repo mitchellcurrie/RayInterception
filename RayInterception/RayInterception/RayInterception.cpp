@@ -13,25 +13,28 @@ void RayInterception::UpdateObjectVertices(Camera _camera, ObjectDataPtr _objPtr
 	for (it = _objPtr->vertexCache.begin(); it != _objPtr->vertexCache.end(); it++)
 	{
 		// Convert position vec3 to vec4, adding 1 at the end
-		glm::vec4 temp{ it->second.vertex.pos, 1 };
+		glm::vec4 temp = glm::vec4(it->second.vertex.pos, 1);
 		// Multiply position by MVP matrix
 		temp = _camera.m_MVP * temp;
 		// Assign the new position back to the vertex cache
 		it->second.vertex.pos = temp;
 
 		// Same calculations for the normal, multiplying by the normal matrix
-		temp = { it->second.vertex.nrm, 1 };
+		temp = glm::vec4(it->second.vertex.nrm, 1);
 		temp = _camera.m_Normal * temp;
 		it->second.vertex.nrm = temp;
 	}
 }
 
-void RayInterception::ScreenToWorld(glm::vec2 & v, Camera _camera)
+glm::vec3 RayInterception::CalculateRayFromScreenPoint(float x, float y, Camera _camera)
 {
-	// X and Y are in pixels here
-	float x = v[0];
-	float y = v[1];
+	// Need to move from screen space -> clip space -> view space -> world space
+	// By reversing the camera transformations done to reach screen space
 	
+	////////////////////////////////
+	// Screen space to clip space //
+	////////////////////////////////
+
 	// Translate x and y to move origin to centre of view port
 	x -= _camera.m_ImageWidth / 2;
 	y -= _camera.m_ImageHeight / 2;
@@ -40,10 +43,37 @@ void RayInterception::ScreenToWorld(glm::vec2 & v, Camera _camera)
 	x /= (_camera.m_ImageWidth / 2);
 	y /= (_camera.m_ImageHeight / 2);
 
+	// Create vec4 with x, y, z = 1 and w = 1
+	// z = 1 because ray goes into screen which is positive z in a left handed camera.
+	// w = 1 to form 4d vector to be able to multiply with 4x4 matrices
+	glm::vec4 clipRay = glm::vec4(x, y, 1.0f, 1.0f);
 
+	//////////////////////////////
+	// Clip Space to View Space //
+	//////////////////////////////
 
-	v[0] = x;
-	v[1] = y;
+	// Reverse projection matrix transformation
+
+	glm::vec4 viewRay = glm::inverse(_camera.m_Projection) * clipRay;
+
+	// We only need the reversed x and y
+	// Set Z to 1 as the ray moves into the screen and w to 0 to represent a ray rather than a point
+
+	viewRay = glm::vec4(viewRay.x, viewRay.y, -1.0f, 0.0f);
+
+	///////////////////////////////
+	// View Space to World Space //
+	///////////////////////////////
+
+	// Inverse view matrix transformation
+
+	glm::vec4 worldRay = glm::inverse(_camera.m_View) * viewRay;
+
+	// Normalize
+	worldRay = glm::normalize(worldRay);
+
+	// Return xyz of worldRay
+	return glm::vec3(worldRay);	
 }
 
 
