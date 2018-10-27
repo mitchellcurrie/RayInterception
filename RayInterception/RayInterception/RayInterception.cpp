@@ -1,6 +1,9 @@
+#include <iostream>
 #include <map>
 #include "RayInterception.h"
 #include "ObjectData.h"
+
+std::vector <VertexPosNrmTex> RayInterception::IndexOrderVertices;
 
 RayInterception::RayInterception()
 {
@@ -76,6 +79,58 @@ glm::vec3 RayInterception::CalculateRayFromScreenPoint(float x, float y, Camera 
 
 	// Return xyz of worldRay
 	return glm::vec3(worldRay);	
+}
+
+void RayInterception::OrderVerticesBasedOnIndex(ObjectDataPtr _objPtr)
+{
+	IndexOrderVertices.resize(_objPtr->vertexCache.size());
+
+	std::unordered_map<std::string, VertexCache>::iterator it;
+
+	for (it = _objPtr->vertexCache.begin(); it != _objPtr->vertexCache.end(); it++)
+	{
+		IndexOrderVertices[it->second.index] = it->second.vertex;
+	}
+
+	//for (int j = 0; j < 10; j++)
+	//{
+	//	std::cout << j << "   " << IndexOrderVertices[j].pos.x << "," << IndexOrderVertices[j].pos.y << "," << IndexOrderVertices[j].pos.z << std::endl;
+	//}
+}
+
+bool RayInterception::CalculateRayToObjectIntersection(glm::vec3 ray, ObjectDataPtr _objPtr, glm::vec3 &intersect)
+{	
+	std::vector<glm::vec3> intersections;
+	bool intersectionFound = false;
+	
+	for (int i = 0; i < _objPtr->indices.size() - 2; i += 3)
+	{
+		if (GetRayTriangleIntersection(
+			ray,
+			IndexOrderVertices[_objPtr->indices[i]].pos,
+			IndexOrderVertices[_objPtr->indices[i + 1]].pos,
+			IndexOrderVertices[_objPtr->indices[i + 2]].pos,
+			intersect))
+		{
+			intersectionFound = true;
+			intersections.push_back(intersect);
+		}
+	}
+
+	if (!intersectionFound)
+	{
+		return false;
+	}
+
+	// Find closest intersection point and make "intersect" equal that
+
+	return true;
+}
+
+bool RayInterception::GetRayTriangleIntersection(glm::vec3 ray, glm::vec3 triIndex_1, glm::vec3 triIndex_2, glm::vec3 triIndex_3, glm::vec3 & intersect)
+{
+
+	return false;
 }
 
 

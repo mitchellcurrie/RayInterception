@@ -69,17 +69,21 @@ int main()
 	{
 		RayInterception::UpdateObjectVertices(camera, objPtr);
 		//PrintAllVertexCacheElements(objPtr);
-		PrintIndicesVector(objPtr);
+		//PrintIndicesVector(objPtr);
+		RayInterception::OrderVerticesBasedOnIndex(objPtr);
 	}
 
 	float x = 1530;
 	float y = 900;
 
-	std::cout << x << "," << y << std::endl;
+	glm::vec3 Ray1 = RayInterception::CalculateRayFromScreenPoint(x, y, camera);
 
-	glm::vec3 R1 = RayInterception::CalculateRayFromScreenPoint(x, y, camera);
-
-	std::cout << R1.x << "," << R1.y << "," << R1.z << std::endl;
+	glm::vec3 Intersection; 
+	
+	if (RayInterception::CalculateRayToObjectIntersection(Ray1, objPtr, Intersection))
+	{
+		std::cout << "Intersection!";
+	}
 
 	int w;
 	std::cin >> w;
@@ -112,7 +116,6 @@ void PrintVertexCacheElements(ObjectDataPtr _objPtr, int _numOfElements) // to r
 void PrintAllVertexCacheElements(ObjectDataPtr _objPtr) // to remove
 {
 	std::unordered_map<std::string, VertexCache>::iterator it;
-	it = _objPtr->vertexCache.begin();
 
 	for (it = _objPtr->vertexCache.begin(); it != _objPtr->vertexCache.end(); it++)
 	{
@@ -133,8 +136,11 @@ void PrintIndicesVector(ObjectDataPtr _objPtr)
 {
 	//_objPtr->indices.size()
 
-	for (int i = 0; i < 100; i++)
+	for (int i = 0; i < _objPtr->indices.size(); i++)
 	{
-		std::cout << "i: " << i << "   Index: " << _objPtr->indices[i] << std::endl;
+		if (_objPtr->indices[i] < 20)
+		{
+			std::cout << "i: " << i << "   Index: " << _objPtr->indices[i] << std::endl;
+		}
 	}
 }
