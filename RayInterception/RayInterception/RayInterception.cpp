@@ -98,7 +98,7 @@ void RayInterception::OrderVerticesBasedOnIndex(ObjectDataPtr _objPtr)
 	//}
 }
 
-bool RayInterception::CalculateRayToObjectIntersection(glm::vec3 ray, ObjectDataPtr _objPtr, glm::vec3 &intersect)
+bool RayInterception::CalculateRayToObjectIntersection(glm::vec3 ray, ObjectDataPtr _objPtr, Camera _camera, glm::vec3 &intersect)
 {	
 	std::vector<glm::vec3> intersections;
 	bool intersectionFound = false;
@@ -120,6 +120,15 @@ bool RayInterception::CalculateRayToObjectIntersection(glm::vec3 ray, ObjectData
 	if (!intersectionFound)
 	{
 		return false;
+	}
+
+	float minDistance = -1.0;
+	int index = 0;
+
+	for (int j = 0; j < intersections.size(); j++)
+	{
+		// if distance less than minDistance
+		// store index
 	}
 
 	// Find closest intersection point and make "intersect" equal that

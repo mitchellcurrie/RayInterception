@@ -19,7 +19,6 @@
 // https://stackoverflow.com/questions/40276068/opengl-raycasting-with-any-object
 
 
-
 #include <iostream>
 #include <time.h>
 #include "ObjectData.h"
@@ -80,7 +79,7 @@ int main()
 
 	glm::vec3 Intersection; 
 	
-	if (RayInterception::CalculateRayToObjectIntersection(Ray1, objPtr, Intersection))
+	if (RayInterception::CalculateRayToObjectIntersection(Ray1, objPtr, camera, Intersection))
 	{
 		std::cout << "Intersection!";
 	}
@@ -90,6 +89,9 @@ int main()
 
 	return 0;
 }
+
+
+
 
 
 
