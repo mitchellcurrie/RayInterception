@@ -12,10 +12,12 @@ void RayInterception::UpdateObjectVertices(Camera _camera, ObjectDataPtr _objPtr
 
 	for (it = _objPtr->vertexCache.begin(); it != _objPtr->vertexCache.end(); it++)
 	{
-		// Convert position vec3 to vec4, adding 1 at the end
+		// Convert position vec3 to vec4, adding 1 at the end for w
 		glm::vec4 temp = glm::vec4(it->second.vertex.pos, 1);
+
 		// Multiply position by MVP matrix
 		temp = _camera.m_MVP * temp;
+
 		// Assign the new position back to the vertex cache
 		it->second.vertex.pos = temp;
 
