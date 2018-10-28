@@ -126,6 +126,8 @@ bool RayInterception::CalculateRayToObjectIntersection(glm::vec3 ray, ObjectData
 	float minDistance = -1.0f;
 	int index = 0;
 
+	std::cout << "Size of intersections vector: " << intersections.size() << std::endl;
+
 	for (int j = 0; j < intersections.size(); j++)
 	{
 		float distance = glm::length(intersections[j] - glm::vec3(camera.m_Position));
@@ -144,6 +146,8 @@ bool RayInterception::CalculateRayToObjectIntersection(glm::vec3 ray, ObjectData
 
 bool RayInterception::GetRayTriangleIntersection(glm::vec3 ray, glm::vec3 triIndex_1, glm::vec3 triIndex_2, glm::vec3 triIndex_3, Camera camera, glm::vec3 & intersect)
 {
+	// First check if the ray intersects with the triangle plane
+	
 	// Calculate triangle normal
 	glm::vec3 triangleNormal = glm::cross(triIndex_2 - triIndex_1, triIndex_3 - triIndex_1);
 
@@ -153,11 +157,48 @@ bool RayInterception::GetRayTriangleIntersection(glm::vec3 ray, glm::vec3 triInd
 	// If dot 1 == 0, tri nrm and ray are perpendicular, therefore the triangle plane and the ray are parallel
 	if (dot1 == 0)
 	{
+		// Check if ray is contained within the triangle plane by calculating the dot product of the trianlge normal and camera to triangle point vector
 		float dot2 = glm::dot(triangleNormal, glm::vec3(camera.m_Position) - triIndex_1);
+
+		if (dot2 != 0)
+		{
+			// Line is disjointed from plane and no intersection
+			return false;
+		}
+
+		// Ray is contained within the triangle plane, therefore intersects at every point
+		// Intersection is inifinity and therefore not intersecting???
 	}
 
+	// Intersection exists
+
+	// Ray equation = Point on Ray + t * Ray direction
+
+	// t = -(triNorm.CameraPos + d) / (N.D)
+
+	// t = d - (n . p) / n . d   
+	glm::vec3 t = (ray - (glm::dot(triangleNormal, glm::vec3(camera.m_Position)))) /
+			      (glm::dot(triangleNormal, ray));
+
+	// Putting t back into ray equation
+	intersect = glm::vec3(camera.m_Position) + t * ray;
 
 
+	// Check if intersection is within the triangle
+
+	// Need to check against all edges of the triangle
+	// Inside triangle if all are true:
+
+	// [(B - A) x (Q - A)] . n >= 0
+	// [(C - B) x (Q - B)] . n >= 0
+	// [(A - C) x (Q - C)] . n >= 0
+
+	if (glm::dot(glm::cross(triIndex_2 - triIndex_1, intersect - triIndex_1), triangleNormal) >= 0 &&
+		glm::dot(glm::cross(triIndex_3 - triIndex_2, intersect - triIndex_2), triangleNormal) >= 0 &&
+		glm::dot(glm::cross(triIndex_1 - triIndex_3, intersect - triIndex_3), triangleNormal) >= 0)
+	{
+		return true;
+	}
 
 	return false;
 }

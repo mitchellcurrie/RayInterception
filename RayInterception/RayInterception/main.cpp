@@ -21,6 +21,7 @@
 // Ray triangle intersection questions with answers to test
 // https://math.stackexchange.com/questions/1979876/ray-casting-algorithm-in-ray-triangle-intersection
 // https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/ray-triangle-intersection-geometric-solution
+// https://www.gamedev.net/forums/topic/321357-ray-plane-intersection/
 
 
 #include <iostream>
@@ -74,18 +75,22 @@ int main()
 		//PrintAllVertexCacheElements(objPtr);
 		//PrintIndicesVector(objPtr);
 		RayInterception::OrderVerticesBasedOnIndex(objPtr);
-	}
 
-	float x = 1530;
-	float y = 900;
+		float x = 440;
+		float y = 540;
 
-	glm::vec3 Ray1 = RayInterception::CalculateRayFromScreenPoint(x, y, camera);
+		glm::vec3 Ray1 = RayInterception::CalculateRayFromScreenPoint(x, y, camera);
 
-	glm::vec3 Intersection; 
-	
-	if (RayInterception::CalculateRayToObjectIntersection(Ray1, objPtr, camera, Intersection))
-	{
-		std::cout << "Intersection!";
+		glm::vec3 Intersection;
+
+		if (RayInterception::CalculateRayToObjectIntersection(Ray1, objPtr, camera, Intersection))
+		{
+			std::cout << "Intersection!  At: " << Intersection.x << "," << Intersection.y << "," << Intersection.z << std::endl << std::endl;
+		}
+		else
+		{
+			std::cout << "No Intersection" << std::endl << std::endl;
+		}
 	}
 
 	int w;
