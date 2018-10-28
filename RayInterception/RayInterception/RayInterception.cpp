@@ -177,8 +177,17 @@ bool RayInterception::GetRayTriangleIntersection(glm::vec3 ray, glm::vec3 triInd
 	// t = -(triNorm.CameraPos + d) / (N.D)
 
 	// t = d - (n . p) / n . d   
-	glm::vec3 t = (ray - (glm::dot(triangleNormal, glm::vec3(camera.m_Position)))) /
-			      (glm::dot(triangleNormal, ray));
+	/*glm::vec3 t = (ray - (glm::dot(triangleNormal, glm::vec3(camera.m_Position)))) /
+			      (glm::dot(triangleNormal, ray));*/
+
+	//float t = (glm::dot((ray - triangleNormal), glm::vec3(camera.m_Position))) / 
+	//	      (glm::dot(triangleNormal, ray));
+
+	float t = (glm::dot(triangleNormal, triIndex_1) - glm::dot(glm::vec3(camera.m_Position), triangleNormal)) /
+				glm::dot(ray, triangleNormal);
+			     
+
+
 
 	// Putting t back into ray equation
 	intersect = glm::vec3(camera.m_Position) + t * ray;

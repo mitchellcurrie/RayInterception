@@ -46,10 +46,10 @@ int main()
 	// cin to get input for object filepath, then check for if objPtr is null / or do a cout in the loader saying loading... etc
 	// if null, do a while loop to enter filepath again
 
-	clock_t tStart = clock();
-	std::cout << "Loading..." << std::endl;  //change to if actually loading etc
-	objPtr = ObjectLoader::Load("green.obj");
-	printf("Time taken to load object: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
+	//clock_t tStart = clock();
+	//std::cout << "Loading..." << std::endl;  //change to if actually loading etc
+	//objPtr = ObjectLoader::Load("green.obj");
+	//printf("Time taken to load object: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
 
 	///////////////////
 	// Set up Camera //
@@ -76,8 +76,11 @@ int main()
 		//PrintIndicesVector(objPtr);
 		RayInterception::OrderVerticesBasedOnIndex(objPtr);
 
-		float x = 440;
-		float y = 540;
+		/*float x = 440;
+		float y = 540;*/
+
+		float x = 480;
+		float y = 520; 
 
 		glm::vec3 Ray1 = RayInterception::CalculateRayFromScreenPoint(x, y, camera);
 
@@ -98,9 +101,6 @@ int main()
 
 	return 0;
 }
-
-
-
 
 
 
@@ -155,3 +155,22 @@ void PrintIndicesVector(ObjectDataPtr _objPtr)
 		}
 	}
 }
+
+
+// Ray triangle intersect test
+
+//glm::vec3 triA{ -10,-2.3,0 };
+//glm::vec3 triB{ 4.4,20.3,9.5 };
+//glm::vec3 triC{ 9.8,-10,0 };
+//glm::vec3 rayOrg{ 0,0,0 };
+//glm::vec3 rayDir{ 0.68, -1.14, 1.82 };
+//
+//camera.m_Position = glm::vec4(rayOrg, 1);
+//
+//glm::vec3 intersect{ 0 };
+//
+//
+//if (RayInterception::GetRayTriangleIntersection(rayDir, triA, triB, triC, camera, intersect))
+//{
+//	std::cout << "Intersection: " << intersect.x << "," << intersect.y << "," << intersect.z << std::endl;
+//	std::cout << "Distance: " << glm::length(intersect - glm::vec3(camera.m_Position)) << std::endl;
