@@ -98,18 +98,19 @@ void RayInterception::OrderVerticesBasedOnIndex(ObjectDataPtr _objPtr)
 	//}
 }
 
-bool RayInterception::CalculateRayToObjectIntersection(glm::vec3 ray, ObjectDataPtr _objPtr, Camera _camera, glm::vec3 &intersect)
+bool RayInterception::CalculateRayToObjectIntersection(glm::vec3 ray, ObjectDataPtr objPtr, Camera camera, glm::vec3 &intersect)
 {	
 	std::vector<glm::vec3> intersections;
 	bool intersectionFound = false;
 	
-	for (int i = 0; i < _objPtr->indices.size() - 2; i += 3)
+	for (int i = 0; i < objPtr->indices.size() - 2; i += 3)
 	{
 		if (GetRayTriangleIntersection(
 			ray,
-			IndexOrderVertices[_objPtr->indices[i]].pos,
-			IndexOrderVertices[_objPtr->indices[i + 1]].pos,
-			IndexOrderVertices[_objPtr->indices[i + 2]].pos,
+			IndexOrderVertices[objPtr->indices[i]].pos,
+			IndexOrderVertices[objPtr->indices[i + 1]].pos,
+			IndexOrderVertices[objPtr->indices[i + 2]].pos,
+			camera,
 			intersect))
 		{
 			intersectionFound = true;
@@ -122,24 +123,41 @@ bool RayInterception::CalculateRayToObjectIntersection(glm::vec3 ray, ObjectData
 		return false;
 	}
 
-	float minDistance = -1.0;
+	float minDistance = -1.0f;
 	int index = 0;
 
 	for (int j = 0; j < intersections.size(); j++)
 	{
-		// if distance less than minDistance
-		// store index
+		float distance = glm::length(intersections[j] - glm::vec3(camera.m_Position));
+
+		if (distance < minDistance)
+		{
+			index = j;
+			distance = minDistance;
+		}
 	}
 
-	// Find closest intersection point and make "intersect" equal that
+	intersect = intersections[index];
 
 	return true;
 }
 
-bool RayInterception::GetRayTriangleIntersection(glm::vec3 ray, glm::vec3 triIndex_1, glm::vec3 triIndex_2, glm::vec3 triIndex_3, glm::vec3 & intersect)
+bool RayInterception::GetRayTriangleIntersection(glm::vec3 ray, glm::vec3 triIndex_1, glm::vec3 triIndex_2, glm::vec3 triIndex_3, Camera camera, glm::vec3 & intersect)
 {
+	// Calculate triangle normal
+	glm::vec3 triangleNormal = glm::cross(triIndex_2 - triIndex_1, triIndex_3 - triIndex_1);
+
+	// Calculate dot product of triangle normal and ray 
+	float dot1 = glm::dot(triangleNormal, ray);
+
+	// If dot 1 == 0, tri nrm and ray are perpendicular, therefore the triangle plane and the ray are parallel
+	if (dot1 == 0)
+	{
+		float dot2 = glm::dot(triangleNormal, glm::vec3(camera.m_Position) - triIndex_1);
+	}
+
+
+
 
 	return false;
 }
-
-

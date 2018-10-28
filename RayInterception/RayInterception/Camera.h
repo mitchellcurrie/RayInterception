@@ -12,6 +12,8 @@ public:
 	void SetMatrices();
 	void PrintCameraContents(); //remove later
 
+	glm::vec4 m_Position;
+
 	glm::mat4 m_MVP; // move to public for testing
 	glm::mat4 m_Normal; // testing
 	glm::mat4 m_View;
@@ -20,7 +22,7 @@ public:
 	float m_ImageHeight, m_ImageWidth; // keep public?
 
 private:
-	glm::vec4 m_Position;
+//	glm::vec4 m_Position;
 
 	glm::mat4 m_Rotation;
 	glm::mat4 m_Translation;

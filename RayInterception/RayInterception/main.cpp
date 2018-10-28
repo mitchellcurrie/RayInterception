@@ -18,6 +18,10 @@
 // http://schabby.de/picking-opengl-ray-tracing/
 // https://stackoverflow.com/questions/40276068/opengl-raycasting-with-any-object
 
+// Ray triangle intersection questions with answers to test
+// https://math.stackexchange.com/questions/1979876/ray-casting-algorithm-in-ray-triangle-intersection
+// https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/ray-triangle-intersection-geometric-solution
+
 
 #include <iostream>
 #include <time.h>
