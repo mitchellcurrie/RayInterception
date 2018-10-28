@@ -5,6 +5,8 @@
 // Check that world position using ray to triangle interection on each face of the object
 // When looping through all, get dot product of surface normal etc to see if face is facing camera and ignore?
 
+// SWAP ENDLs for \n for ones being kept in
+
 // Links
 // https://webglfundamentals.org/webgl/lessons/webgl-3d-camera.html
 // https://www.3dgep.com/understanding-the-view-matrix/
@@ -35,14 +37,83 @@ void PrintVertexCacheElements(ObjectDataPtr _objPtr, int _numOfElements); // rem
 void PrintAllVertexCacheElements(ObjectDataPtr _objPtr);
 void PrintIndicesVector(ObjectDataPtr _objPtr);
 
-//void GetScreenCoordinatesInput(float x1, float y1, float x2, float)
+void GetScreenCoordinatesInput(short &x1, short &y1, short &x2, short &y2);
 
 int main()
 {
 	std::cout << "Ray Interception Calculator\n" << std::endl;
 
-	float x1, y1, x2, y2;
+	short x1, y1, x2, y2;
 
+	GetScreenCoordinatesInput(x1, y1, x2, y2);
+
+	///////////////////
+	// Set up Camera //
+	///////////////////
+
+	Camera camera;
+	if (!camera.InitialiseValuesFromJSON(const_cast<char*>("camera.json")))
+	{
+		std::cout << "ERROR: Could not initialise camera.\n";
+		system("pause");
+		return 0;
+	}
+
+	camera.SetMatrices();
+
+	/////////////////
+	// Load object //
+	/////////////////
+
+	ObjectDataPtr objPtr(nullptr);
+
+	clock_t tStart = clock();
+	std::cout << "Loading Mesh Object... Please wait" << std::endl;  //change to if actually loading etc
+	objPtr = ObjectLoader::Load("green.obj");
+
+	if (!objPtr)
+	{
+		std::cout << "ERROR: Mesh object file failed to load.\n";
+		system("pause");
+		return 0;
+	}
+
+	printf("Time taken to load object: %.2fs\n\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
+
+	///////////////////////////////////////////////////////
+	// Update object vertices based on camera and reorder//
+	//////////////////////////////////////////////////////
+
+	RayInterception::UpdateObjectVertices(camera, objPtr);
+	RayInterception::OrderVerticesBasedOnIndex(objPtr);
+
+	/////////////////////////////////
+	// Calculate Ray Intersections //
+	/////////////////////////////////
+
+	glm::vec3 Ray1 = RayInterception::CalculateRayFromScreenPoint(x1, y1, camera);
+	glm::vec3 Ray2 = RayInterception::CalculateRayFromScreenPoint(x2, y2, camera);
+
+	glm::vec3 Intersection;
+	glm::vec3 Intersection2;
+
+	if (RayInterception::CalculateRayToObjectIntersection(Ray1, objPtr, camera, Intersection))
+	{
+		std::cout << "Intersection!  At: " << Intersection.x << "," << Intersection.y << "," << Intersection.z << std::endl << std::endl;
+	}
+	else
+	{
+		std::cout << "No Intersection" << std::endl << std::endl;
+	}
+
+
+	system("pause");
+	return 0;
+}
+
+
+void GetScreenCoordinatesInput(short & x1, short & y1, short & x2, short & y2)
+{
 	std::cout << "Please enter the first screen space coordinate:" << std::endl << "x: ";
 	std::cin >> x1;
 	std::cout << "y: ";
@@ -56,70 +127,6 @@ int main()
 	std::cin >> y2;
 
 	std::cout << std::endl;
-
-
-	/////////////////
-	// Load object //
-	/////////////////
-
-	ObjectDataPtr objPtr(nullptr);
-
-	clock_t tStart = clock();
-	std::cout << "Loading Mesh Object... Please wait" << std::endl;  //change to if actually loading etc
-	objPtr = ObjectLoader::Load("green.obj");
-	printf("Time taken to load object: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
-
-	///////////////////
-	// Set up Camera //
-	///////////////////
-
-	Camera camera;
-	if (!camera.InitialiseValuesFromJSON(const_cast<char*>("camera.json")))
-	{
-		std::cout << "Couldn't initialse camera";
-	}
-	else
-	{
-		camera.SetMatrices();
-	}
-
-	////////////////////////////////////////////
-	// Update object vertices based on camera //
-	///////////////////////////////////////////
-
-	if (objPtr)
-	{
-		RayInterception::UpdateObjectVertices(camera, objPtr);
-		RayInterception::OrderVerticesBasedOnIndex(objPtr);
-
-		/*float x = 440;
-		float y = 540;*/
-
-		float x = 480;
-		float y = 520; 
-
-		glm::vec3 Ray1 = RayInterception::CalculateRayFromScreenPoint(x, y, camera);
-
-		glm::vec3 Intersection;
-
-		if (RayInterception::CalculateRayToObjectIntersection(Ray1, objPtr, camera, Intersection))
-		{
-			std::cout << "Intersection!  At: " << Intersection.x << "," << Intersection.y << "," << Intersection.z << std::endl << std::endl;
-		}
-		else
-		{
-			std::cout << "No Intersection" << std::endl << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "Mesh object file failed to load." << std::endl;
-	}
-
-	int w;
-	std::cin >> w;
-
-	return 0;
 }
 
 
@@ -175,7 +182,6 @@ void PrintIndicesVector(ObjectDataPtr _objPtr)
 		}
 	}
 }
-
 
 // Ray triangle intersect test
 

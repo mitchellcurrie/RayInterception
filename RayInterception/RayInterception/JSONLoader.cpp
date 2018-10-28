@@ -31,7 +31,7 @@ bool JSONLoader::ReadJSONandFillMap(char* filepath)
 
 	if (!JSONFile.is_open())
 	{
-		std::cout << "Could not open file in ReadJSONandFillMap function" << std::endl;
+		std::cout << "ERROR: Could not open file in ReadJSONandFillMap.\n";
 		return false;
 	}
 
