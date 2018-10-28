@@ -35,21 +35,39 @@ void PrintVertexCacheElements(ObjectDataPtr _objPtr, int _numOfElements); // rem
 void PrintAllVertexCacheElements(ObjectDataPtr _objPtr);
 void PrintIndicesVector(ObjectDataPtr _objPtr);
 
+//void GetScreenCoordinatesInput(float x1, float y1, float x2, float)
+
 int main()
 {
+	std::cout << "Ray Interception Calculator\n" << std::endl;
+
+	float x1, y1, x2, y2;
+
+	std::cout << "Please enter the first screen space coordinate:" << std::endl << "x: ";
+	std::cin >> x1;
+	std::cout << "y: ";
+	std::cin >> y1;
+
+	std::cout << std::endl;
+
+	std::cout << "Please enter the second screen space coordinate:" << std::endl << "x: ";
+	std::cin >> x2;
+	std::cout << "y: ";
+	std::cin >> y2;
+
+	std::cout << std::endl;
+
+
 	/////////////////
 	// Load object //
 	/////////////////
 
 	ObjectDataPtr objPtr(nullptr);
 
-	// cin to get input for object filepath, then check for if objPtr is null / or do a cout in the loader saying loading... etc
-	// if null, do a while loop to enter filepath again
-
-	//clock_t tStart = clock();
-	//std::cout << "Loading..." << std::endl;  //change to if actually loading etc
-	//objPtr = ObjectLoader::Load("green.obj");
-	//printf("Time taken to load object: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
+	clock_t tStart = clock();
+	std::cout << "Loading Mesh Object... Please wait" << std::endl;  //change to if actually loading etc
+	objPtr = ObjectLoader::Load("green.obj");
+	printf("Time taken to load object: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
 
 	///////////////////
 	// Set up Camera //
@@ -72,8 +90,6 @@ int main()
 	if (objPtr)
 	{
 		RayInterception::UpdateObjectVertices(camera, objPtr);
-		//PrintAllVertexCacheElements(objPtr);
-		//PrintIndicesVector(objPtr);
 		RayInterception::OrderVerticesBasedOnIndex(objPtr);
 
 		/*float x = 440;
@@ -94,6 +110,10 @@ int main()
 		{
 			std::cout << "No Intersection" << std::endl << std::endl;
 		}
+	}
+	else
+	{
+		std::cout << "Mesh object file failed to load." << std::endl;
 	}
 
 	int w;
@@ -174,3 +194,7 @@ void PrintIndicesVector(ObjectDataPtr _objPtr)
 //{
 //	std::cout << "Intersection: " << intersect.x << "," << intersect.y << "," << intersect.z << std::endl;
 //	std::cout << "Distance: " << glm::length(intersect - glm::vec3(camera.m_Position)) << std::endl;
+
+
+/*float x = 440;
+float y = 540;*/
