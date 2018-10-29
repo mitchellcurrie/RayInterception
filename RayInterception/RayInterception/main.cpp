@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 	///////////////////
 
 	Camera camera;
-	if (!camera.InitialiseValuesFromJSON(const_cast<char*>("camera.json")))
+	if (!camera.InitialiseValuesFromJSON(const_cast<char*>("Assets/camera.json")))
 	{
 		std::cout << "ERROR: Could not initialise camera.\n\n";
 		system("pause");
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 
 	clock_t tStart = clock();
 	std::cout << "Loading Mesh... Please wait (can take up to 45 seconds)\n";
-	MeshPtr = ObjectLoader::Load("green.obj");
+	MeshPtr = ObjectLoader::Load("Assets/green.obj");
 
 	if (!MeshPtr)
 	{
@@ -122,8 +122,8 @@ int main(int argc, char *argv[])
 
 void PrintUserInputAndInfo(int Ps1_x, int Ps1_y, int Ps2_x, int Ps2_y)
 {
-	std::cout << "Ps1:  " << Ps1_x << " , " << Ps2_y << "\nPs2:  " << Ps2_x << " , " << Ps2_y << "\n\n";
-	std::cout << "Rays 1 and 2 are calculated from screen positions Ps1 and Ps2 (in pixels).  \n\n";
+	std::cout << "Ps1:  " << Ps1_x << " , " << Ps1_y << "\nPs2:  " << Ps2_x << " , " << Ps2_y << "\n\n";
+	std::cout << "Ray 1 and Ray 2 are calculated from screen positions Ps1 and Ps2 (in pixels).  \n\n";
 }
 
 void PrintVec3(glm::vec3 v)
