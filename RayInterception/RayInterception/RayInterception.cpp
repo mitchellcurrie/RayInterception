@@ -130,7 +130,7 @@ bool RayInterception::CalculateRayToObjectIntersection(glm::vec3 ray, ObjectData
 	float minDistance = -1.0f;
 	int index = 0;
 
-	std::cout << "Size of intersections vector: " << intersections.size() << std::endl;
+	//std::cout << "Size of intersections vector: " << intersections.size() << std::endl;
 
 	for (int j = 0; j < intersections.size(); j++)
 	{

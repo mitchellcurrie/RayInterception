@@ -38,10 +38,12 @@ void PrintAllVertexCacheElements(ObjectDataPtr _objPtr);
 void PrintIndicesVector(ObjectDataPtr _objPtr);
 
 void GetScreenCoordinatesInput(short &x1, short &y1, short &x2, short &y2);
+void PrintVec3(glm::vec3);
+void PrintRayInterceptionResults(bool Ray1Intercepted, bool Ray2Intercepted, glm::vec3 Ray1InterceptionPoint, glm::vec3 Ray2InterceptionPoint);
 
 int main()
 {
-	std::cout << "Ray Interception Calculator\n" << std::endl;
+	std::cout << "RAY INTERCEPTION CALCULATOR\n" << std::endl;
 
 	short x1, y1, x2, y2;
 
@@ -68,7 +70,7 @@ int main()
 	ObjectDataPtr objPtr(nullptr);
 
 	clock_t tStart = clock();
-	std::cout << "Loading Mesh Object... Please wait" << std::endl;  //change to if actually loading etc
+	std::cout << "Loading Mesh Object... Please wait\n";
 	objPtr = ObjectLoader::Load("green.obj");
 
 	if (!objPtr)
@@ -78,7 +80,7 @@ int main()
 		return 0;
 	}
 
-	printf("Time taken to load object: %.2fs\n\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
+	printf("Time taken to load object: %.2fs\n\n\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
 
 	///////////////////////////////////////////////////////
 	// Update object vertices based on camera and reorder//
@@ -94,40 +96,75 @@ int main()
 	glm::vec3 Ray1 = RayInterception::CalculateRayFromScreenPoint(x1, y1, camera);
 	glm::vec3 Ray2 = RayInterception::CalculateRayFromScreenPoint(x2, y2, camera);
 
-	glm::vec3 Intersection;
-	glm::vec3 Intersection2;
+	glm::vec3 Ray1InterceptionPoint, Ray2InterceptionPoint;
 
-	if (RayInterception::CalculateRayToObjectIntersection(Ray1, objPtr, camera, Intersection))
-	{
-		std::cout << "Intersection!  At: " << Intersection.x << "," << Intersection.y << "," << Intersection.z << std::endl << std::endl;
-	}
-	else
-	{
-		std::cout << "No Intersection" << std::endl << std::endl;
-	}
+	bool Ray1Intercepted = RayInterception::CalculateRayToObjectIntersection(Ray1, objPtr, camera, Ray1InterceptionPoint);
+	bool Ray2Intercepted = RayInterception::CalculateRayToObjectIntersection(Ray2, objPtr, camera, Ray2InterceptionPoint);
 
+	PrintRayInterceptionResults(Ray1Intercepted, Ray2Intercepted, Ray1InterceptionPoint, Ray2InterceptionPoint);
 
 	system("pause");
 	return 0;
 }
 
 
+void PrintVec3(glm::vec3 v)
+{
+	std::cout << v.x << ", " << v.y << ", " << v.z << "\n\n";
+}
+
+void PrintRayInterceptionResults(bool Ray1Intercepted, bool Ray2Intercepted, glm::vec3 Ray1InterceptionPoint, glm::vec3 Ray2InterceptionPoint)
+{
+	if (Ray1Intercepted)
+	{
+		std::cout << "Ray 1 Interception with Object at: ";
+		PrintVec3(Ray1InterceptionPoint);
+	}
+
+	if (Ray2Intercepted)
+	{
+		std::cout << "Ray 2 Interception with Object at: ";
+		PrintVec3(Ray2InterceptionPoint);
+	}
+
+	if (Ray1Intercepted && Ray2Intercepted)
+	{
+		float distance = glm::length(Ray2InterceptionPoint - Ray1InterceptionPoint);
+		std::cout << "\nDistance between interception points: " << distance << "\n\n\n";
+	}
+	else if (!Ray1Intercepted && !Ray2Intercepted)
+	{
+		std::cout << "Neither Ray 1 or Ray 2 intercepted with the object. \n\n\n";
+	}
+
+	else // Only 1 ray intercepted - can't compute distance
+	{
+		std::cout << "\nDistance calculatation between interception points not possible as only one ray intersected the object. \n\n\n";
+	}
+}
+
 void GetScreenCoordinatesInput(short & x1, short & y1, short & x2, short & y2)
 {
-	std::cout << "Please enter the first screen space coordinate:" << std::endl << "x: ";
+	std::cout << "Please enter the first screen space coordinate (in pixels) for Ray 1:" << std::endl << "x: ";
 	std::cin >> x1;
 	std::cout << "y: ";
 	std::cin >> y1;
 
 	std::cout << std::endl;
 
-	std::cout << "Please enter the second screen space coordinate:" << std::endl << "x: ";
+	std::cout << "Please enter the second screen space coordinate (in pixels) for Ray 2:" << std::endl << "x: ";
 	std::cin >> x2;
 	std::cout << "y: ";
 	std::cin >> y2;
 
 	std::cout << std::endl;
 }
+
+
+
+
+
+
 
 
 
