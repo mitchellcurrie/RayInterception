@@ -1,5 +1,3 @@
-// SWAP ENDLs for \n for ones being kept in
-// Inlclude order according to object loader .cpp
 #include "ObjectData.h"
 #include "ObjectLoader.h"
 #include "Camera.h"
@@ -18,9 +16,9 @@ int main(int argc, char *argv[])
 	////////////////////////////////
 
 	// Check for the correct number of arguments passed to application
-	if (argc != 5) // if user enters 4 arguments, argc equals 5
+	if (argc != 5) // if user correctly enters 4 arguments, argc equals 5
 	{
-		std::cout << "Invalid number of arguments.\n\nPlease enter 4 arguments in this order:\nPs1_x , Ps1_y , Ps2_x , Ps2_y.\n\n";
+		std::cout << "Invalid number of arguments.\n\nPlease enter 4 arguments for the two screen coordinates in this order:\nPs1_x , Ps1_y , Ps2_x , Ps2_y.\n\n";
 		system("pause");
 		return 0;
 	}
@@ -58,6 +56,7 @@ int main(int argc, char *argv[])
 
 	clock_t tStart = clock();
 	std::cout << "Loading Mesh... Please wait (can take up to 45 seconds)\n";
+
 	MeshPtr = ObjectLoader::Load("Assets/green.obj");
 
 	if (!MeshPtr)
@@ -69,9 +68,9 @@ int main(int argc, char *argv[])
 
 	printf("Time taken to load mesh object: %.2fs\n\n\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
 
-	///////////////////////////////////////////////////////
-	// Update object vertices based on camera and reorder//
-	//////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////
+	// Update object vertices based on camera and reorder based on index //
+	///////////////////////////////////////////////////////////////////////
 
 	RayInterception::UpdateObjectVertices(camera, MeshPtr);
 	RayInterception::OrderVerticesBasedOnIndex(MeshPtr);
@@ -79,6 +78,8 @@ int main(int argc, char *argv[])
 	/////////////////////////////////
 	// Calculate Ray Interceptions //
 	/////////////////////////////////
+
+	std::cout << "Calculating Interception Points...\n\n";
 
 	glm::vec3 Ray1 = RayInterception::CalculateRayFromScreenPoint(Ps1_x, Ps1_y, camera);
 	glm::vec3 Ray2 = RayInterception::CalculateRayFromScreenPoint(Ps2_x, Ps2_y, camera);

@@ -9,13 +9,15 @@ RayInterception::RayInterception()
 {
 }
 
+// Updates the mesh object vertices based on the MVP and normal matrices
 void RayInterception::UpdateObjectVertices(Camera _camera, ObjectDataPtr _objPtr)
 {
 	std::unordered_map<std::string, VertexCache>::iterator it;
 
+	// Iterate through vertex cache
 	for (it = _objPtr->vertexCache.begin(); it != _objPtr->vertexCache.end(); it++)
 	{
-		// Convert position vec3 to vec4, adding 1 at the end for w
+		// Convert position vec3 to vec4, adding 1 at the end for w, to represent a position vector (need vec4 to multiply with MVP matrix)
 		glm::vec4 temp = glm::vec4(it->second.vertex.pos, 1);
 
 		// Multiply position by MVP matrix
@@ -24,23 +26,23 @@ void RayInterception::UpdateObjectVertices(Camera _camera, ObjectDataPtr _objPtr
 		// Assign the new position back to the vertex cache
 		it->second.vertex.pos = temp;
 
-		// Same calculations for the normal, multiplying by the normal matrix
+		// Same calculations for the normal, but instead multiplying by the normal matrix
 		temp = glm::vec4(it->second.vertex.nrm, 1);
 		temp = _camera.m_Normal * temp;
 		it->second.vertex.nrm = temp;
 	}
 }
-
+// Returns a vec3 ray based on the screen coordinates and camera
 glm::vec3 RayInterception::CalculateRayFromScreenPoint(int _x, int _y, Camera _camera)
 {
-	// Need to move from screen space -> clip space -> view space -> world space
-	// By reversing the camera transformations done to reach screen space
+	// Need to move from screen space -> clip space -> view space -> world space,
+	// by reversing the camera transformations done to reach screen space
 	
 	////////////////////////////////
 	// Screen space to clip space //
 	////////////////////////////////
 
-	// Convert coordinates to floats
+	// Convert screen coordinates to floats
 	float x = static_cast<float>(_x);
 	float y = static_cast<float>(_y);
 
@@ -62,7 +64,6 @@ glm::vec3 RayInterception::CalculateRayFromScreenPoint(int _x, int _y, Camera _c
 	//////////////////////////////
 
 	// Reverse projection matrix transformation
-
 	glm::vec4 viewRay = glm::inverse(_camera.m_Projection) * clipRay;
 
 	// We only need the reversed x and y
@@ -75,7 +76,6 @@ glm::vec3 RayInterception::CalculateRayFromScreenPoint(int _x, int _y, Camera _c
 	///////////////////////////////
 
 	// Inverse view matrix transformation
-
 	glm::vec4 worldRay = glm::inverse(_camera.m_View) * viewRay;
 
 	// Normalize
@@ -85,6 +85,8 @@ glm::vec3 RayInterception::CalculateRayFromScreenPoint(int _x, int _y, Camera _c
 	return glm::vec3(worldRay);	
 }
 
+// Populates vector "IndexOrderVertices" with all mesh vertices, with the vertex index as the vector index
+// Resulting in a vector storing all mesh vertices in order of index - for use in "CalculateRayToObjectInterception" function
 void RayInterception::OrderVerticesBasedOnIndex(ObjectDataPtr _objPtr)
 {
 	IndexOrderVertices.resize(_objPtr->vertexCache.size());
@@ -99,34 +101,43 @@ void RayInterception::OrderVerticesBasedOnIndex(ObjectDataPtr _objPtr)
 
 bool RayInterception::CalculateRayToObjectInterception(glm::vec3 ray, ObjectDataPtr objPtr, Camera camera, glm::vec3 &intercept)
 {	
+	// Create vector to store all interception points
 	std::vector<glm::vec3> interceptions;
+
 	bool interceptionFound = false;
 	
+	//Iterate through indices, where each 3 successive values represent a face (triangle) of the mesh
 	for (int i = 0; i < objPtr->indices.size() - 2; i += 3)
 	{
+		// Check if ray intercepts triangle made up of the 3 indices
 		if (GetRayTriangleInterception(
 			ray,													
-			IndexOrderVertices[objPtr->indices[i]].pos,				// Becomes triangle index 1
-			IndexOrderVertices[objPtr->indices[i + 1]].pos,         // Becomes triangle index 2
-			IndexOrderVertices[objPtr->indices[i + 2]].pos,			// Becomes triangle index 3
+			IndexOrderVertices[objPtr->indices[i]].pos,				// Triangle index 1
+			IndexOrderVertices[objPtr->indices[i + 1]].pos,         // Triangle index 2
+			IndexOrderVertices[objPtr->indices[i + 2]].pos,			// Triangle index 3
 			camera,													
 			intercept))												// reference to interception point
 		{
 			interceptionFound = true;
+
+			// Interception occurred, store resulting intercept vec3 in vector of interceptions
 			interceptions.push_back(intercept);
 		}
 	}
 
+	// No interceptions found with ray and all mesh faces
 	if (!interceptionFound)
 	{
 		return false;
 	}
 
+	// Check which interception point is closest to the camera world position
 	float minDistance = -1.0f;
 	int index = 0;
 
 	for (int j = 0; j < interceptions.size(); j++)
 	{
+		// Calculate distance between interception point and camera world position
 		float distance = glm::length(interceptions[j] - glm::vec3(camera.m_Position));
 
 		if (distance < minDistance)
@@ -136,22 +147,25 @@ bool RayInterception::CalculateRayToObjectInterception(glm::vec3 ray, ObjectData
 		}
 	}
 
+	// Intercept equals item in vector with lowest distance value
 	intercept = interceptions[index];
 
 	return true;
 }
 
 bool RayInterception::GetRayTriangleInterception(glm::vec3 ray, glm::vec3 triIndex_1, glm::vec3 triIndex_2, glm::vec3 triIndex_3, Camera camera, glm::vec3 & intercept)
-{
-	// First check if the ray intercepts with the triangle plane
-	
+{	
+	///////////////////////////////////////////////////////////////
+	// First check if the ray intercepts with the triangle plane //
+	///////////////////////////////////////////////////////////////
+
 	// Calculate triangle normal
 	glm::vec3 triangleNormal = glm::cross(triIndex_2 - triIndex_1, triIndex_3 - triIndex_1);
 
 	// Calculate dot product of triangle normal and ray 
 	float dot1 = glm::dot(triangleNormal, ray);
 
-	// If dot 1 == 0, tri nrm and ray are perpendicular, therefore the triangle plane and the ray are parallel
+	// If dot1 == 0, tri nrm and ray are perpendicular, therefore the triangle plane and the ray are parallel
 	if (dot1 == 0)
 	{
 		// Check if ray is contained within the triangle plane by calculating the dot product of the trianlge normal and camera to triangle point vector
@@ -164,10 +178,14 @@ bool RayInterception::GetRayTriangleInterception(glm::vec3 ray, glm::vec3 triInd
 		}
 
 		// Ray is contained within the triangle plane, therefore intercepts at every point
-		// Interception is inifinity and therefore not intercepting???
+		// Interception is inifinity and can't calculate interception point
+
+		return false;
 	}
 
-	// Interception exists
+	////////////////////////////////////
+	// Interception with plane exists //
+	////////////////////////////////////
 
 	// Ray equation = Point on Ray + t * Ray direction
 
@@ -179,10 +197,12 @@ bool RayInterception::GetRayTriangleInterception(glm::vec3 ray, glm::vec3 triInd
 	// Putting t back into ray equation
 	intercept = glm::vec3(camera.m_Position) + t * ray;
 
-	// Check if interception is within the triangle
+	//////////////////////////////////////////////////
+	// Check if interception is within the triangle //
+	//////////////////////////////////////////////////
 
-	// Need to check against all edges of the triangle to see if point is inside or outside
-	// Point is inside triangle if all are true:
+	// Need to check interception pooint against all edges of the triangle to see if point is inside or outside
+	// Point is inside triangle if all of the following are true:
 
 	if (glm::dot(glm::cross(triIndex_2 - triIndex_1, intercept - triIndex_1), triangleNormal) >= 0 &&
 		glm::dot(glm::cross(triIndex_3 - triIndex_2, intercept - triIndex_2), triangleNormal) >= 0 &&

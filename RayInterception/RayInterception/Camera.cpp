@@ -14,6 +14,7 @@ Camera::Camera()
 
 bool Camera::InitialiseValuesFromJSON(char* JSONFilepath)
 {
+	// Read values from JSON file and populate map
 	if (!JSONLoader::ReadJSONandFillMap(JSONFilepath))
 	{
 		return false;
@@ -21,6 +22,7 @@ bool Camera::InitialiseValuesFromJSON(char* JSONFilepath)
 
 	std::multimap<std::string, float> ::iterator it;
 
+	// Get 3 translations values from map (Camera position x, y, z)
 	auto translationValues = JSONLoader::m_dataMap.equal_range("translation");
 	int count = 0;
 
@@ -30,6 +32,7 @@ bool Camera::InitialiseValuesFromJSON(char* JSONFilepath)
 		count++;
 	}
 
+	// Iterate through map and store camera member variables based on map key
 	for (it = JSONLoader::m_dataMap.begin(); it != JSONLoader::m_dataMap.end(); it++)
 	{	
 		if (it->first == "roll")
@@ -107,16 +110,16 @@ void Camera::SetMatrices()
 	// Translate by translation matrix
 	m_Camera *= m_Translation;
 
-	// Set model matrix to identity since it is assumed the models local space is world space
+	// Set model matrix to identity since it is assumed the model's local space is world space
 	m_Model = glm::mat4(1.0);
 
 	// View Matrix is the inverse of the camera matrix
 	m_View = glm::inverse(m_Camera);
 
-	// Utils::PrintMat4(m_Camera);
-
+	// Calculate vertical FOV based on horizontal FOV and the image width and height.
 	m_VertFov = 2 * atan(tan(m_HorFOV / 2)*(m_ImageHeight / m_ImageWidth));
 
+	// Calculate projection matrix using glm perspective function
 	m_Projection = glm::perspective(
 		m_VertFov,						// vertical FOV
 		m_ImageWidth / m_ImageHeight,   // Aspect ratio
@@ -126,7 +129,9 @@ void Camera::SetMatrices()
 	
 	glm::mat4 modelView = m_View * m_Model;
 
+	// Normal matrix is the transpose of the inverse model view matrix
 	m_Normal = glm::transpose(glm::inverse(modelView));
 
+	// Calculate MVP matrix to multiply with mesh vertices
 	m_MVP = m_Projection * modelView;
 }
