@@ -25,7 +25,6 @@ private:
 	glm::mat4 m_Rotation;
 	glm::mat4 m_Translation;
 	glm::mat4 m_Camera;
-
 	glm::mat4 m_Model;
 	
 	float m_Roll, m_Pitch, m_Yaw;

@@ -16,13 +16,13 @@ void ConsolePrinter::PrintRayInterceptionResults(bool Ray1Intercepted, bool Ray2
 {
 	if (Ray1Intercepted)
 	{
-		std::cout << "Ray1: Interception with mesh at: ";
+		std::cout << "Ray1 Interception with mesh at: ";
 		PrintVec3(Ray1InterceptionPoint);
 	}
 
 	if (Ray2Intercepted)
 	{
-		std::cout << "Ray2: Interception with mesh at: ";
+		std::cout << "Ray2 Interception with mesh at: ";
 		PrintVec3(Ray2InterceptionPoint);
 	}
 

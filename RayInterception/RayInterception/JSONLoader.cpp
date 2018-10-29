@@ -1,7 +1,6 @@
 #include "JSONLoader.h"
 
 #include <fstream>
-#include <sstream>
 
 std::multimap<std::string, float> JSONLoader::m_dataMap;
 

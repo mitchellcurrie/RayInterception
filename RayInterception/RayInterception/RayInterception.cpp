@@ -9,12 +9,12 @@ RayInterception::RayInterception()
 {
 }
 
-// Updates the mesh object vertices based on the MVP and normal matrices, and stores vertices in new "IndexOrderVertices" vector
+// Updates the mesh object vertices based on the MVP and normal matrices, and stores vertices in member "IndexOrderVertices" vector
 void RayInterception::UpdateAndReorderObjectVertices(Camera _camera, ObjectDataPtr _objPtr)
 {
 	std::unordered_map<std::string, VertexCache>::iterator it;
 
-	// Resize vector to store vertices in order of index
+	// Resize member vector to store vertices in order of index
 	IndexOrderVertices.resize(_objPtr->vertexCache.size());
 
 	// Iterate through vertex cache
@@ -130,24 +130,8 @@ bool RayInterception::CalculateRayToObjectInterception(glm::vec3 ray, ObjectData
 		return false;
 	}
 
-	// Check which interception point is closest to the camera world position
-	float minDistance = -1.0f;
-	int index = 0;
-
-	for (int j = 0; j < interceptions.size(); j++)
-	{
-		// Calculate distance between interception point and camera world position
-		float distance = glm::length(interceptions[j] - glm::vec3(camera.m_Position));
-
-		if (distance < minDistance)
-		{
-			index = j;
-			distance = minDistance;
-		}
-	}
-
-	// Intercept equals item in vector with lowest distance value
-	intercept = interceptions[index];
+	// Check which interception point is closest to the camera world position, and store in "intercept"
+	intercept = GetClosestIntercept(interceptions, camera);
 
 	return true;
 }
@@ -211,4 +195,26 @@ bool RayInterception::GetRayTriangleInterception(glm::vec3 ray, glm::vec3 triInd
 	}
 
 	return false;
+}
+
+// Returns the interception point which is closest to the camera world position
+glm::vec3 RayInterception::GetClosestIntercept(std::vector<glm::vec3> interceptions, Camera camera)
+{
+	float minDistance = 100000000.0f; //setting as large number to ensure first distance checked is less than minDistance
+	int index = 0;
+
+	for (int j = 0; j < interceptions.size(); j++)
+	{
+		// Calculate distance between interception point and camera world position
+		float distance = glm::length(interceptions[j] - glm::vec3(camera.m_Position));
+
+		if (distance < minDistance)
+		{
+			index = j;
+			minDistance = distance;
+		}
+	}
+
+	// Intercept equals item in vector with lowest distance value
+	return interceptions[index];
 }
