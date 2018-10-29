@@ -9,14 +9,19 @@ RayInterception::RayInterception()
 {
 }
 
-// Updates the mesh object vertices based on the MVP and normal matrices
-void RayInterception::UpdateObjectVertices(Camera _camera, ObjectDataPtr _objPtr)
+// Updates the mesh object vertices based on the MVP and normal matrices, and stores vertices in new "IndexOrderVertices" vector
+void RayInterception::UpdateAndReorderObjectVertices(Camera _camera, ObjectDataPtr _objPtr)
 {
 	std::unordered_map<std::string, VertexCache>::iterator it;
+
+	// Resize vector to store vertices in order of index
+	IndexOrderVertices.resize(_objPtr->vertexCache.size());
 
 	// Iterate through vertex cache
 	for (it = _objPtr->vertexCache.begin(); it != _objPtr->vertexCache.end(); it++)
 	{
+		// Update vertices based on camera //
+		
 		// Convert position vec3 to vec4, adding 1 at the end for w, to represent a position vector (need vec4 to multiply with MVP matrix)
 		glm::vec4 temp = glm::vec4(it->second.vertex.pos, 1);
 
@@ -30,6 +35,14 @@ void RayInterception::UpdateObjectVertices(Camera _camera, ObjectDataPtr _objPtr
 		temp = glm::vec4(it->second.vertex.nrm, 1);
 		temp = _camera.m_Normal * temp;
 		it->second.vertex.nrm = temp;
+
+
+		// Add vertex to new vector //
+
+		// Populate vector "IndexOrderVertices" with mesh vertex, with the vertex index as the vector index
+		// Resulting in a vector storing all mesh vertices in order of index - for use in "CalculateRayToObjectInterception" function
+		IndexOrderVertices[it->second.index] = it->second.vertex;
+		
 	}
 }
 // Returns a vec3 ray based on the screen coordinates and camera
@@ -83,20 +96,6 @@ glm::vec3 RayInterception::CalculateRayFromScreenPoint(int _x, int _y, Camera _c
 
 	// Return xyz of worldRay
 	return glm::vec3(worldRay);	
-}
-
-// Populates vector "IndexOrderVertices" with all mesh vertices, with the vertex index as the vector index
-// Resulting in a vector storing all mesh vertices in order of index - for use in "CalculateRayToObjectInterception" function
-void RayInterception::OrderVerticesBasedOnIndex(ObjectDataPtr _objPtr)
-{
-	IndexOrderVertices.resize(_objPtr->vertexCache.size());
-
-	std::unordered_map<std::string, VertexCache>::iterator it;
-
-	for (it = _objPtr->vertexCache.begin(); it != _objPtr->vertexCache.end(); it++)
-	{
-		IndexOrderVertices[it->second.index] = it->second.vertex;
-	}
 }
 
 bool RayInterception::CalculateRayToObjectInterception(glm::vec3 ray, ObjectDataPtr objPtr, Camera camera, glm::vec3 &intercept)

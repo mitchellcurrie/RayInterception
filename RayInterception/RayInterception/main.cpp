@@ -72,8 +72,7 @@ int main(int argc, char *argv[])
 	// Update object vertices based on camera and reorder based on index //
 	///////////////////////////////////////////////////////////////////////
 
-	RayInterception::UpdateObjectVertices(camera, MeshPtr);
-	RayInterception::OrderVerticesBasedOnIndex(MeshPtr);
+	RayInterception::UpdateAndReorderObjectVertices(camera, MeshPtr);
 
 	/////////////////////////////////
 	// Calculate Ray Interceptions //
