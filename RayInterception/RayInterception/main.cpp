@@ -38,17 +38,29 @@ void PrintVertexCacheElements(ObjectDataPtr _objPtr, int _numOfElements); // rem
 void PrintAllVertexCacheElements(ObjectDataPtr _objPtr); // remove
 void PrintIndicesVector(ObjectDataPtr _objPtr); // remove
 
-void GetScreenCoordinatesInput(short &x1, short &y1, short &x2, short &y2);
 void PrintVec3(glm::vec3);
 void PrintRayInterceptionResults(bool Ray1Intercepted, bool Ray2Intercepted, glm::vec3 Ray1InterceptionPoint, glm::vec3 Ray2InterceptionPoint);
+void PrintUserInputAndInfo(int Ps1_x, int Ps1_y, int Ps2_x, int Ps2_y);
 
-int main()
+int main(int argc, char *argv[])
 {
-	std::cout << "RAY INTERCEPTION CALCULATOR\n" << std::endl;
+	std::cout << "\nRAY INTERCEPTION CALCULATOR\n\n";
 
-	short Ps1_x, Ps1_y, Ps2_x, Ps2_y;
+	if (argc != 5) // if user enters 4 arguments, argc equals 5
+	{
+		std::cout << "Invalid number of arguments.\n\nPlease enter 4 arguments in this order:\nPs1_x , Ps1_y , Ps2_x , Ps2_y.\n\n";
+		system("pause");
+		return 0;
+	}
+	
+	int Ps1_x, Ps1_y, Ps2_x, Ps2_y;
 
-	GetScreenCoordinatesInput(Ps1_x, Ps1_y, Ps2_x, Ps2_y);
+	Ps1_x = atoi(argv[1]);
+	Ps1_y = atoi(argv[2]);
+	Ps2_x = atoi(argv[3]);
+	Ps2_y = atoi(argv[4]);
+
+	PrintUserInputAndInfo(Ps1_x, Ps1_y, Ps2_x, Ps2_y);
 
 	///////////////////
 	// Set up Camera //
@@ -57,7 +69,7 @@ int main()
 	Camera camera;
 	if (!camera.InitialiseValuesFromJSON(const_cast<char*>("camera.json")))
 	{
-		std::cout << "ERROR: Could not initialise camera.\n";
+		std::cout << "ERROR: Could not initialise camera.\n\n";
 		system("pause");
 		return 0;
 	}
@@ -71,12 +83,12 @@ int main()
 	ObjectDataPtr MeshPtr(nullptr);
 
 	clock_t tStart = clock();
-	std::cout << "Loading Mesh... Please wait\n";
+	std::cout << "Loading Mesh... Please wait (can take up to 45 seconds)\n";
 	MeshPtr = ObjectLoader::Load("green.obj");
 
 	if (!MeshPtr)
 	{
-		std::cout << "ERROR: Mesh object file failed to load.\n";
+		std::cout << "\nERROR: Mesh object file failed to load.\n\n";
 		system("pause");
 		return 0;
 	}
@@ -108,6 +120,11 @@ int main()
 	return 0;
 }
 
+void PrintUserInputAndInfo(int Ps1_x, int Ps1_y, int Ps2_x, int Ps2_y)
+{
+	std::cout << "Ps1:  " << Ps1_x << " , " << Ps2_y << "\nPs2:  " << Ps2_x << " , " << Ps2_y << "\n\n";
+	std::cout << "Rays 1 and 2 are calculated from screen positions Ps1 and Ps2 (in pixels).  \n\n";
+}
 
 void PrintVec3(glm::vec3 v)
 {
@@ -144,22 +161,6 @@ void PrintRayInterceptionResults(bool Ray1Intercepted, bool Ray2Intercepted, glm
 	}
 }
 
-void GetScreenCoordinatesInput(short & x1, short & y1, short & x2, short & y2)
-{
-	std::cout << "Please enter the first screen space coordinate (in pixels) for Ray 1:" << std::endl << "x: ";
-	std::cin >> x1;
-	std::cout << "y: ";
-	std::cin >> y1;
-
-	std::cout << std::endl;
-
-	std::cout << "Please enter the second screen space coordinate (in pixels) for Ray 2:" << std::endl << "x: ";
-	std::cin >> x2;
-	std::cout << "y: ";
-	std::cin >> y2;
-
-	std::cout << std::endl;
-}
 
 
 
@@ -242,3 +243,21 @@ void PrintIndicesVector(ObjectDataPtr _objPtr)
 
 /*float x = 440;
 float y = 540;*/
+
+
+//void GetScreenCoordinatesInput(short & x1, short & y1, short & x2, short & y2)
+//{
+//	std::cout << "Please enter the first screen space coordinate (in pixels) for Ray 1:" << std::endl << "x: ";
+//	std::cin >> x1;
+//	std::cout << "y: ";
+//	std::cin >> y1;
+//
+//	std::cout << std::endl;
+//
+//	std::cout << "Please enter the second screen space coordinate (in pixels) for Ray 2:" << std::endl << "x: ";
+//	std::cin >> x2;
+//	std::cout << "y: ";
+//	std::cin >> y2;
+//
+//	std::cout << std::endl;
+//}

@@ -31,7 +31,7 @@ void RayInterception::UpdateObjectVertices(Camera _camera, ObjectDataPtr _objPtr
 	}
 }
 
-glm::vec3 RayInterception::CalculateRayFromScreenPoint(short _x, short _y, Camera _camera)
+glm::vec3 RayInterception::CalculateRayFromScreenPoint(int _x, int _y, Camera _camera)
 {
 	// Need to move from screen space -> clip space -> view space -> world space
 	// By reversing the camera transformations done to reach screen space
