@@ -124,7 +124,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectLoader.cpp" />
     <ClCompile Include="RayInterception.cpp" />
-    <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="ConsolePrinter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -132,10 +132,10 @@
     <ClInclude Include="ObjectData.h" />
     <ClInclude Include="ObjectLoader.h" />
     <ClInclude Include="RayInterception.h" />
-    <ClInclude Include="Utils.h" />
+    <ClInclude Include="ConsolePrinter.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="camera.json" />
+    <None Include="Assets\camera.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

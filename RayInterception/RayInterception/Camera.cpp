@@ -1,12 +1,10 @@
 #include "Camera.h"
-#include "Utils.h"
+
 #include "glm/gtc/matrix_transform.hpp"
-#include <iostream> // remove
 
 Camera::Camera()
 {
-	m_Position = glm::vec4(0);
-	m_Position.w = 1.0f;
+	m_Position = glm::vec4(0,0,0,1);
 	m_Roll = 0, m_Pitch = 0, m_Yaw = 0;
 	m_FocalLength = 0;
 	m_RadialDistortion = 0;
@@ -34,79 +32,38 @@ bool Camera::InitialiseValuesFromJSON(char* JSONFilepath)
 
 	for (it = JSONLoader::m_dataMap.begin(); it != JSONLoader::m_dataMap.end(); it++)
 	{	
-		if (it->first == "roll" || it->first == "Roll") //  remove the capitalised part?
+		if (it->first == "roll")
 			m_Roll = it->second;
 
-		else if (it->first == "pitch" || it->first == "Pitch")
+		else if (it->first == "pitch")
 			m_Pitch = it->second;
 
-		else if (it->first == "yaw" || it->first == "Yaw")
+		else if (it->first == "yaw")
 			m_Yaw = it->second;
 
-		else if (it->first == "focal length" || it->first == "Focal length")
+		else if (it->first == "focal length")
 			m_FocalLength = it->second;
 
-		else if (it->first == "horizontal fov" || it->first == "Horizontal fov")
+		else if (it->first == "horizontal fov")
 			m_HorFOV = it->second;
 
-		else if (it->first == "radial distortion" || it->first == "Radial distortion")
+		else if (it->first == "radial distortion")
 			m_RadialDistortion = it->second;
 
-		else if (it->first == "width" || it->first == "Width")
+		else if (it->first == "width")
 			m_ImageWidth = it->second;
 
-		else if (it->first == "height" || it->first == "Height")
+		else if (it->first == "height")
 			m_ImageHeight = it->second;
 	}
-
-	//PrintCameraContents();
 
 	return true;
 }
 
 void Camera::SetRotation()
 {
-	//// ORIGINAL //
-	//// Pitch is rotation around x-axis
-	//glm::mat4x4 pitchMatrix {1,0,0,0,
-	//						 0,cos(m_Pitch),-sin(m_Pitch),0,
-	//						 0,sin(m_Pitch),cos(m_Pitch),0,
-	//						 0,0,0,1};
+	// Euler ZXZ Rotation Format //
 
-	//// Yaw is rotation around y-axis
-	//glm::mat4x4 yawMatrix {cos(m_Yaw),0,sin(m_Yaw),0,
-	//					   0,1,0,0,
-	//					   -sin(m_Yaw),0,cos(m_Yaw),0,
-	//					   0,0,0,1};
-
-	//// Roll is rotation around z-axis
-	//glm::mat4x4 rollMatrix {cos(m_Roll),-sin(m_Roll),0,0,
-	//					   sin(m_Roll),cos(m_Roll),0,0,
-	//	                   0,0,1,0,
-	//	                   0,0,0,1};
-	
-
-	//// ZYZ //
-	//// Rotate around z-axis by pitch
-	//glm::mat4x4 a{ cos(m_Pitch),-sin(m_Pitch),0,0,
-	//	sin(m_Pitch),cos(m_Pitch),0,0,
-	//	0,0,1,0,
-	//	0,0,0,1 };
-	//
-	//// Rotate around y-axis by yaw
-	//glm::mat4x4 b{ cos(m_Yaw),0,sin(m_Yaw),0,
-	//		0,1,0,0,
-	//		-sin(m_Yaw),0,cos(m_Yaw),0,
-	//		0,0,0,1};
-
-	//// Rotate around z-axis by roll
-	//glm::mat4x4 c{ cos(m_Roll),-sin(m_Roll),0,0,
-	//	sin(m_Roll),cos(m_Roll),0,0,
-	//	0,0,1,0,
-	//	0,0,0,1 };
-
-
-	//// Euler ZXZ Rotation Format //
 	// Rotate around z-axis by pitch
 	glm::mat4 zPitch {cos(m_Pitch),-sin(m_Pitch),0,0,
 						sin(m_Pitch),cos(m_Pitch),0,0,
@@ -126,19 +83,6 @@ void Camera::SetRotation()
 					   0,0,0,1 };
 
 	m_Rotation = zPitch * xYaw * zRoll;
-
-	
-
-
-
-	
-	//glm::mat4x4 cameraRotation = rollMatrix * yawMatrix * pitchMatrix;
-	//glm::mat4x4 cameraRotation = pitchMatrix * yawMatrix * rollMatrix;
-
-	/*glm::mat4x4 ZYZ { cos(m_Roll)*cos(m_Yaw)*cos(m_Pitch) - sin(m_Roll)*sin(m_Pitch), -cos(m_Pitch)*sin(m_Roll) - cos(m_Roll)*cos(m_Yaw)*sin(m_Pitch), cos(m_Roll)*sin(m_Yaw), 0,
-		cos(m_Yaw)*cos(m_Pitch)*sin(m_Roll) + cos(m_Roll)*sin(m_Pitch), cos(m_Roll)*cos(m_Pitch) - cos(m_Yaw)*sin(m_Roll)*sin(m_Pitch), sin(m_Roll)*sin(m_Yaw), 0,
-		-cos(m_Pitch)*sin(m_Yaw), sin(m_Yaw)*sin(m_Pitch), cos(m_Yaw),0,
-		0,0,0,1};*/
 }
 
 void Camera::SetTranslation()
@@ -185,18 +129,4 @@ void Camera::SetMatrices()
 	m_Normal = glm::transpose(glm::inverse(modelView));
 
 	m_MVP = m_Projection * modelView;
-}
-
-void Camera::PrintCameraContents()
-{
-	std::cout << "Translation / Position: " << m_Position.x << "," << m_Position.y << "," << m_Position.z << std::endl;
-	std::cout << "Roll: " << m_Roll << std::endl;
-	std::cout << "Pitch: " << m_Pitch << std::endl;
-	std::cout << "Yaw: " << m_Yaw << std::endl;
-	std::cout << "Focal Length: " << m_FocalLength << std::endl;
-	std::cout << "Radial Distortion: " << m_RadialDistortion << std::endl;
-	std::cout << "Horizontal FOV: " << m_HorFOV << std::endl;
-	std::cout << "Vertical FOV: " << m_VertFov << std::endl;
-	std::cout << "Image Height: " << m_ImageHeight << std::endl;
-	std::cout << "Image Width: " << m_ImageWidth << std::endl;
 }

@@ -1,7 +1,7 @@
-#include <iostream>
-#include <map>
 #include "RayInterception.h"
 #include "ObjectData.h"
+
+#include <map>
 
 std::vector <VertexPosNrmTex> RayInterception::IndexOrderVertices;
 
@@ -95,34 +95,29 @@ void RayInterception::OrderVerticesBasedOnIndex(ObjectDataPtr _objPtr)
 	{
 		IndexOrderVertices[it->second.index] = it->second.vertex;
 	}
-
-	//for (int j = 0; j < 10; j++)
-	//{
-	//	std::cout << j << "   " << IndexOrderVertices[j].pos.x << "," << IndexOrderVertices[j].pos.y << "," << IndexOrderVertices[j].pos.z << std::endl;
-	//}
 }
 
-bool RayInterception::CalculateRayToObjectIntersection(glm::vec3 ray, ObjectDataPtr objPtr, Camera camera, glm::vec3 &intersect)
+bool RayInterception::CalculateRayToObjectInterception(glm::vec3 ray, ObjectDataPtr objPtr, Camera camera, glm::vec3 &intercept)
 {	
-	std::vector<glm::vec3> intersections;
-	bool intersectionFound = false;
+	std::vector<glm::vec3> interceptions;
+	bool interceptionFound = false;
 	
 	for (int i = 0; i < objPtr->indices.size() - 2; i += 3)
 	{
-		if (GetRayTriangleIntersection(
-			ray,
-			IndexOrderVertices[objPtr->indices[i]].pos,
-			IndexOrderVertices[objPtr->indices[i + 1]].pos,
-			IndexOrderVertices[objPtr->indices[i + 2]].pos,
-			camera,
-			intersect))
+		if (GetRayTriangleInterception(
+			ray,													
+			IndexOrderVertices[objPtr->indices[i]].pos,				// Becomes triangle index 1
+			IndexOrderVertices[objPtr->indices[i + 1]].pos,         // Becomes triangle index 2
+			IndexOrderVertices[objPtr->indices[i + 2]].pos,			// Becomes triangle index 3
+			camera,													
+			intercept))												// reference to interception point
 		{
-			intersectionFound = true;
-			intersections.push_back(intersect);
+			interceptionFound = true;
+			interceptions.push_back(intercept);
 		}
 	}
 
-	if (!intersectionFound)
+	if (!interceptionFound)
 	{
 		return false;
 	}
@@ -130,11 +125,9 @@ bool RayInterception::CalculateRayToObjectIntersection(glm::vec3 ray, ObjectData
 	float minDistance = -1.0f;
 	int index = 0;
 
-	//std::cout << "Size of intersections vector: " << intersections.size() << std::endl;
-
-	for (int j = 0; j < intersections.size(); j++)
+	for (int j = 0; j < interceptions.size(); j++)
 	{
-		float distance = glm::length(intersections[j] - glm::vec3(camera.m_Position));
+		float distance = glm::length(interceptions[j] - glm::vec3(camera.m_Position));
 
 		if (distance < minDistance)
 		{
@@ -143,14 +136,14 @@ bool RayInterception::CalculateRayToObjectIntersection(glm::vec3 ray, ObjectData
 		}
 	}
 
-	intersect = intersections[index];
+	intercept = interceptions[index];
 
 	return true;
 }
 
-bool RayInterception::GetRayTriangleIntersection(glm::vec3 ray, glm::vec3 triIndex_1, glm::vec3 triIndex_2, glm::vec3 triIndex_3, Camera camera, glm::vec3 & intersect)
+bool RayInterception::GetRayTriangleInterception(glm::vec3 ray, glm::vec3 triIndex_1, glm::vec3 triIndex_2, glm::vec3 triIndex_3, Camera camera, glm::vec3 & intercept)
 {
-	// First check if the ray intersects with the triangle plane
+	// First check if the ray intercepts with the triangle plane
 	
 	// Calculate triangle normal
 	glm::vec3 triangleNormal = glm::cross(triIndex_2 - triIndex_1, triIndex_3 - triIndex_1);
@@ -166,49 +159,34 @@ bool RayInterception::GetRayTriangleIntersection(glm::vec3 ray, glm::vec3 triInd
 
 		if (dot2 != 0)
 		{
-			// Line is disjointed from plane and no intersection
+			// Line is disjointed from plane and no interception
 			return false;
 		}
 
-		// Ray is contained within the triangle plane, therefore intersects at every point
-		// Intersection is inifinity and therefore not intersecting???
+		// Ray is contained within the triangle plane, therefore intercepts at every point
+		// Interception is inifinity and therefore not intercepting???
 	}
 
-	// Intersection exists
+	// Interception exists
 
 	// Ray equation = Point on Ray + t * Ray direction
 
-	// t = -(triNorm.CameraPos + d) / (N.D)
-
-	// t = d - (n . p) / n . d   
-	/*glm::vec3 t = (ray - (glm::dot(triangleNormal, glm::vec3(camera.m_Position)))) /
-			      (glm::dot(triangleNormal, ray));*/
-
-	//float t = (glm::dot((ray - triangleNormal), glm::vec3(camera.m_Position))) / 
-	//	      (glm::dot(triangleNormal, ray));
+	// Need to calculate t:
 
 	float t = (glm::dot(triangleNormal, triIndex_1) - glm::dot(glm::vec3(camera.m_Position), triangleNormal)) /
 				glm::dot(ray, triangleNormal);
 			     
-
-
-
 	// Putting t back into ray equation
-	intersect = glm::vec3(camera.m_Position) + t * ray;
+	intercept = glm::vec3(camera.m_Position) + t * ray;
 
+	// Check if interception is within the triangle
 
-	// Check if intersection is within the triangle
+	// Need to check against all edges of the triangle to see if point is inside or outside
+	// Point is inside triangle if all are true:
 
-	// Need to check against all edges of the triangle
-	// Inside triangle if all are true:
-
-	// [(B - A) x (Q - A)] . n >= 0
-	// [(C - B) x (Q - B)] . n >= 0
-	// [(A - C) x (Q - C)] . n >= 0
-
-	if (glm::dot(glm::cross(triIndex_2 - triIndex_1, intersect - triIndex_1), triangleNormal) >= 0 &&
-		glm::dot(glm::cross(triIndex_3 - triIndex_2, intersect - triIndex_2), triangleNormal) >= 0 &&
-		glm::dot(glm::cross(triIndex_1 - triIndex_3, intersect - triIndex_3), triangleNormal) >= 0)
+	if (glm::dot(glm::cross(triIndex_2 - triIndex_1, intercept - triIndex_1), triangleNormal) >= 0 &&
+		glm::dot(glm::cross(triIndex_3 - triIndex_2, intercept - triIndex_2), triangleNormal) >= 0 &&
+		glm::dot(glm::cross(triIndex_1 - triIndex_3, intercept - triIndex_3), triangleNormal) >= 0)
 	{
 		return true;
 	}

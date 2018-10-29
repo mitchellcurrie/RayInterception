@@ -1,24 +1,12 @@
-#include <iostream>  // remove afterwards, using for cout
-#include <fstream>
-#include <map> // remove
-#include <string> // remove
-#include <sstream>
 #include "JSONLoader.h"
+
+#include <fstream>
+#include <sstream>
 
 std::multimap<std::string, float> JSONLoader::m_dataMap;
 
 JSONLoader::JSONLoader()
 {
-}
-
-void JSONLoader::PrintMap() // remove
-{
-	std::multimap<std::string, float> ::iterator it;
-
-	for (it = m_dataMap.begin(); it != m_dataMap.end(); it++)
-	{
-		std::cout << it->first << " = " << it->second << std::endl;
-	}
 }
 
 bool JSONLoader::ReadJSONandFillMap(char* filepath)
@@ -31,7 +19,7 @@ bool JSONLoader::ReadJSONandFillMap(char* filepath)
 
 	if (!JSONFile.is_open())
 	{
-		std::cout << "ERROR: Could not open file in ReadJSONandFillMap.\n";
+		printf("ERROR: Could not open file in ReadJSONandFillMap.\n");
 		return false;
 	}
 
