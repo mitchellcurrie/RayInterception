@@ -6,6 +6,7 @@
 // When looping through all, get dot product of surface normal etc to see if face is facing camera and ignore?
 
 // SWAP ENDLs for \n for ones being kept in
+// Inlclude order according to object loader .cpp
 
 // Links
 // https://webglfundamentals.org/webgl/lessons/webgl-3d-camera.html
@@ -34,8 +35,8 @@
 #include "RayInterception.h"
 
 void PrintVertexCacheElements(ObjectDataPtr _objPtr, int _numOfElements); // remove
-void PrintAllVertexCacheElements(ObjectDataPtr _objPtr);
-void PrintIndicesVector(ObjectDataPtr _objPtr);
+void PrintAllVertexCacheElements(ObjectDataPtr _objPtr); // remove
+void PrintIndicesVector(ObjectDataPtr _objPtr); // remove
 
 void GetScreenCoordinatesInput(short &x1, short &y1, short &x2, short &y2);
 void PrintVec3(glm::vec3);
@@ -45,9 +46,9 @@ int main()
 {
 	std::cout << "RAY INTERCEPTION CALCULATOR\n" << std::endl;
 
-	short x1, y1, x2, y2;
+	short Ps1_x, Ps1_y, Ps2_x, Ps2_y;
 
-	GetScreenCoordinatesInput(x1, y1, x2, y2);
+	GetScreenCoordinatesInput(Ps1_x, Ps1_y, Ps2_x, Ps2_y);
 
 	///////////////////
 	// Set up Camera //
@@ -67,39 +68,39 @@ int main()
 	// Load object //
 	/////////////////
 
-	ObjectDataPtr objPtr(nullptr);
+	ObjectDataPtr MeshPtr(nullptr);
 
 	clock_t tStart = clock();
-	std::cout << "Loading Mesh Object... Please wait\n";
-	objPtr = ObjectLoader::Load("green.obj");
+	std::cout << "Loading Mesh... Please wait\n";
+	MeshPtr = ObjectLoader::Load("green.obj");
 
-	if (!objPtr)
+	if (!MeshPtr)
 	{
 		std::cout << "ERROR: Mesh object file failed to load.\n";
 		system("pause");
 		return 0;
 	}
 
-	printf("Time taken to load object: %.2fs\n\n\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
+	printf("Time taken to load mesh object: %.2fs\n\n\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
 
 	///////////////////////////////////////////////////////
 	// Update object vertices based on camera and reorder//
 	//////////////////////////////////////////////////////
 
-	RayInterception::UpdateObjectVertices(camera, objPtr);
-	RayInterception::OrderVerticesBasedOnIndex(objPtr);
+	RayInterception::UpdateObjectVertices(camera, MeshPtr);
+	RayInterception::OrderVerticesBasedOnIndex(MeshPtr);
 
 	/////////////////////////////////
 	// Calculate Ray Intersections //
 	/////////////////////////////////
 
-	glm::vec3 Ray1 = RayInterception::CalculateRayFromScreenPoint(x1, y1, camera);
-	glm::vec3 Ray2 = RayInterception::CalculateRayFromScreenPoint(x2, y2, camera);
+	glm::vec3 Ray1 = RayInterception::CalculateRayFromScreenPoint(Ps1_x, Ps1_y, camera);
+	glm::vec3 Ray2 = RayInterception::CalculateRayFromScreenPoint(Ps2_x, Ps2_y, camera);
 
 	glm::vec3 Ray1InterceptionPoint, Ray2InterceptionPoint;
 
-	bool Ray1Intercepted = RayInterception::CalculateRayToObjectIntersection(Ray1, objPtr, camera, Ray1InterceptionPoint);
-	bool Ray2Intercepted = RayInterception::CalculateRayToObjectIntersection(Ray2, objPtr, camera, Ray2InterceptionPoint);
+	bool Ray1Intercepted = RayInterception::CalculateRayToObjectIntersection(Ray1, MeshPtr, camera, Ray1InterceptionPoint);
+	bool Ray2Intercepted = RayInterception::CalculateRayToObjectIntersection(Ray2, MeshPtr, camera, Ray2InterceptionPoint);
 
 	PrintRayInterceptionResults(Ray1Intercepted, Ray2Intercepted, Ray1InterceptionPoint, Ray2InterceptionPoint);
 
@@ -117,13 +118,13 @@ void PrintRayInterceptionResults(bool Ray1Intercepted, bool Ray2Intercepted, glm
 {
 	if (Ray1Intercepted)
 	{
-		std::cout << "Ray 1 Interception with Object at: ";
+		std::cout << "Ray 1 Interception with mesh at: ";
 		PrintVec3(Ray1InterceptionPoint);
 	}
 
 	if (Ray2Intercepted)
 	{
-		std::cout << "Ray 2 Interception with Object at: ";
+		std::cout << "Ray 2 Interception with mesh at: ";
 		PrintVec3(Ray2InterceptionPoint);
 	}
 
@@ -134,12 +135,12 @@ void PrintRayInterceptionResults(bool Ray1Intercepted, bool Ray2Intercepted, glm
 	}
 	else if (!Ray1Intercepted && !Ray2Intercepted)
 	{
-		std::cout << "Neither Ray 1 or Ray 2 intercepted with the object. \n\n\n";
+		std::cout << "Neither Ray 1 or Ray 2 intercepted with the mesh. \n\n\n";
 	}
 
 	else // Only 1 ray intercepted - can't compute distance
 	{
-		std::cout << "\nDistance calculatation between interception points not possible as only one ray intersected the object. \n\n\n";
+		std::cout << "\nDistance calculatation between interception points not possible as only one ray intercepted the mesh. \n\n\n";
 	}
 }
 
