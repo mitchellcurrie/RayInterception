@@ -8,6 +8,8 @@ JSONLoader::JSONLoader()
 {
 }
 
+// Populates the member variable map with the information from the JSON file
+// Map key = variable name, Map value = variable value
 bool JSONLoader::ReadJSONandFillMap(char* filepath)
 {
 	// Reads JSON file at the filepath specified
@@ -27,11 +29,11 @@ bool JSONLoader::ReadJSONandFillMap(char* filepath)
 	}
 
 	// Read each line and store keys and values in map
-	// Quotation marks surround the variable name (key)
 	while (!JSONFile.eof())
 	{
 		std::getline(JSONFile, currentLine);
 
+		// Quotation marks surround the variable name (key)
 		std::size_t firstFoundQuote = currentLine.find_first_of("\"");
 			
 		if (firstFoundQuote != std::string::npos)
@@ -40,6 +42,7 @@ bool JSONLoader::ReadJSONandFillMap(char* filepath)
 			currentKey = currentLine.substr(firstFoundQuote + 1, currentLine.find_last_of("\"") - 1 - firstFoundQuote);
 		}
 
+		// Digits represent the values
 		std::size_t firstFoundDigit = currentLine.find_first_of("-0123456789");
 
 		if (firstFoundDigit != std::string::npos)

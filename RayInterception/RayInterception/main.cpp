@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 	// Check and store user input //
 	////////////////////////////////
 
-	// Check for the correct number of arguments passed to application
+	// Check for the correct number of command line arguments passed to application
 	if (argc != 5) // if user correctly enters 4 arguments, argc equals 5
 	{
 		std::cout << "Invalid number of arguments.\n\nPlease enter 4 arguments for the two screen coordinates in this order:\nPs1_x , Ps1_y , Ps2_x , Ps2_y.\n\n";

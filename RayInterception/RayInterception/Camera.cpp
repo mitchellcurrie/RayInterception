@@ -12,9 +12,10 @@ Camera::Camera()
 	m_ImageHeight = 0, m_ImageWidth = 0;
 }
 
+// Takes the information stored in the JSONLoader map and assigns them to member variables
 bool Camera::InitialiseValuesFromJSON(char* JSONFilepath)
 {
-	// Read values from JSON file and populate map
+	// Read values from JSON file and populate map (JSONLoader::m_dataMap)
 	if (!JSONLoader::ReadJSONandFillMap(JSONFilepath))
 	{
 		return false;
@@ -22,7 +23,7 @@ bool Camera::InitialiseValuesFromJSON(char* JSONFilepath)
 
 	std::multimap<std::string, float> ::iterator it;
 
-	// Get 3 translations values from map (Camera position x, y, z)
+	// Get 3 translations values from map (Camera position x, y, z) - all stored in the map under the key: "translation"
 	auto translationValues = JSONLoader::m_dataMap.equal_range("translation");
 	int count = 0;
 
@@ -32,7 +33,7 @@ bool Camera::InitialiseValuesFromJSON(char* JSONFilepath)
 		count++;
 	}
 
-	// Iterate through map and store camera member variables based on map key
+	// Iterate through the map and store camera member variables based on map key
 	for (it = JSONLoader::m_dataMap.begin(); it != JSONLoader::m_dataMap.end(); it++)
 	{	
 		if (it->first == "roll")

@@ -152,13 +152,13 @@ bool RayInterception::GetRayTriangleInterception(glm::vec3 ray, glm::vec3 triInd
 	if (dot1 == 0)
 	{
 		// Check if ray is contained within the triangle plane by calculating the dot product of the trianlge normal and camera to triangle point vector
-		float dot2 = glm::dot(triangleNormal, glm::vec3(camera.m_Position) - triIndex_1);
+		//float dot2 = glm::dot(triangleNormal, glm::vec3(camera.m_Position) - triIndex_1);
 
-		if (dot2 != 0)
-		{
-			// Line is disjointed from plane and no interception
-			return false;
-		}
+		//if (dot2 != 0)
+		//{
+		//	// Line is disjointed from plane and no interception
+		//	return false;
+		//}
 
 		// Ray is contained within the triangle plane, therefore intercepts at every point
 		// Interception is inifinity and can't calculate interception point
