@@ -5,7 +5,6 @@
 #include "ConsolePrinter.h"
 
 #include <iostream>
-#include <time.h>
 
 int main(int argc, char *argv[])
 {
@@ -54,8 +53,7 @@ int main(int argc, char *argv[])
 
 	ObjectDataPtr MeshPtr(nullptr);
 
-	clock_t tStart = clock();
-	std::cout << "Loading Mesh... Please wait (can take up to 45 seconds)\n";
+	std::cout << "Loading Mesh... \n";
 
 	MeshPtr = ObjectLoader::Load("Assets/green.obj");
 
@@ -65,8 +63,6 @@ int main(int argc, char *argv[])
 		system("pause");
 		return 0;
 	}
-
-	printf("Time taken to load mesh object: %.2fs\n\n\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
 
 	///////////////////////////////////////////////////////////////////////
 	// Update object vertices based on camera and reorder based on index //
